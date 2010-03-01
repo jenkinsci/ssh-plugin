@@ -10,11 +10,11 @@
     </f:entry>
     
     <f:entry title="Pre build script" help="${helpURL}/help-prescript.html">
-		<f:expandableTextbox name="ssh.preScript" value="${instance.preScript}"/>
+		<f:textarea name="ssh.preScript" value="${instance.preScript}"/>
   	</f:entry>
   	
   	<f:entry title="Post build script" help="${helpURL}/help-postscript.html">
-		<f:expandableTextbox name="ssh.postScript" value="${instance.postScript}"/>
+		<f:textarea name="ssh.postScript" value="${instance.postScript}"/>
   	</f:entry>
   	
 </j:jelly>
