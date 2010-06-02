@@ -16,7 +16,7 @@ Based on the cool scp plugin.</description>
 	<groupId>org.jvnet.hudson.plugins</groupId>
 	<artifactId>ssh</artifactId>
 	<name>Hudson SSH plugin</name>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<packaging>hpi</packaging>
 	<url>http://wiki.hudson-ci.org/display/HUDSON/SSH+plugin</url>
 	
@@ -55,8 +55,8 @@ Based on the cool scp plugin.</description>
 	</pluginRepositories>
 
   <scm>
-    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/trunk/ssh</connection>
-    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/trunk/ssh</developerConnection>
-    <url>https://hudson.dev.java.net/source/browse/hudson/trunk/ssh</url>
+    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/tags/ssh-1.1</connection>
+    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/ssh-1.1</developerConnection>
+    <url>https://hudson.dev.java.net/source/browse/hudson/tags/ssh-1.1</url>
   </scm>
 </project>
