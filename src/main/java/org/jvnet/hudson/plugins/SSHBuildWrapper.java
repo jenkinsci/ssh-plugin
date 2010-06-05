@@ -68,7 +68,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 	private void executePreBuildScript(PrintStream logger) {
 		log(logger, "executing pre build script:\n" + preScript);
 		SSHSite site = getSite();
-		if (preScript != null && preScript.trim() != "") {
+		if (preScript != null && !preScript.trim().equals("")) {
 			site.executeCommand(logger, preScript);
 		}
 	}
@@ -76,7 +76,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 	private void executePostBuildScript(PrintStream logger) {
 		log(logger, "executing post build script:\n" + postScript);
 		SSHSite site = getSite();
-		if (postScript != null && postScript.trim() != "") {
+		if (postScript != null && !postScript.trim().equals("")) {
 			site.executeCommand(logger, postScript);
 		}
 	}
