@@ -6,20 +6,18 @@ Based on the cool scp plugin.</description>
 	<parent>
 		<groupId>org.jvnet.hudson.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.347</version>
+		<version>1.358</version>
 		<!--
 			which version of Hudson is this plugin built against?
 		-->
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.jvnet.hudson.plugins</groupId>
 	<artifactId>ssh</artifactId>
-	<name>Hudson SSH plugin</name>
+	<name>Jenkins SSH plugin</name>
 	<version>1.2-SNAPSHOT</version>
 	<packaging>hpi</packaging>
-	<url>http://wiki.hudson-ci.org/display/HUDSON/SSH+plugin</url>
-	
+	<url>http://wiki.jenkins-ci.org/display/JENKINS/SSH+plugin</url>
 
 	<developers>
 		<developer>
