@@ -1,7 +1,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
   	<j:set var="helpURL" value="/plugin/ssh" />
-    <f:entry title="SSH site">
+    <f:entry title="${%SSH site}">
       <select class="setting-input" name="ssh.siteName" help="${helpURL}/help-hostselect.html">
         <j:forEach var="s" items="${descriptor.sites}">
           <f:option selected="${s.name==instance.siteName}">${s.name}</f:option>
@@ -9,11 +9,11 @@
       </select>
     </f:entry>
     
-    <f:entry title="Pre build script" help="${helpURL}/help-prescript.html">
+    <f:entry title="${%Pre build script}" help="${helpURL}/help-prescript.html">
 		<f:textarea name="ssh.preScript" value="${instance.preScript}"/>
   	</f:entry>
   	
-  	<f:entry title="Post build script" help="${helpURL}/help-postscript.html">
+  	<f:entry title="${%Post build script}" help="${helpURL}/help-postscript.html">
 		<f:textarea name="ssh.postScript" value="${instance.postScript}"/>
   	</f:entry>
   	

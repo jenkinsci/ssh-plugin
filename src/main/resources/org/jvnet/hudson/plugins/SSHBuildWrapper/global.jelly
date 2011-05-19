@@ -1,30 +1,30 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <!-- nothing to configure -->
-  <f:section title="SSH remote hosts">
-    <f:entry title="SSH sites"
-      description="SSH sites that projects will want to connect">
+  <f:section title="${%SSH remote hosts}">
+    <f:entry title="${%SSH sites}"
+      description="${%SSH sites that projects will want to connect}">
       <f:repeatable var="site" items="${descriptor.sites}">
         <table width="100%">
-          <f:entry title="Hostname" help="/plugin/ssh/help-hostname.html">
+          <f:entry title="${%Hostname}" help="/plugin/ssh/help-hostname.html">
             <f:textbox name="ssh.hostname" value="${site.hostname}"/>
           </f:entry>
-          <f:entry title="Port" help="/plugin/ssh/help-port.html">
+          <f:entry title="${%Port}" help="/plugin/ssh/help-port.html">
             <f:textbox name="ssh.port" value="${site.port}"/>
           </f:entry>
-          <f:entry title="User Name" help="/plugin/ssh/help-login.html">
+          <f:entry title="${%User Name}" help="/plugin/ssh/help-login.html">
             <f:textbox name="ssh.username" value="${site.username}"
 				checkMethod="post"
 				checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/loginCheck?hostname='+escape(Form.findMatchingInput(this,'ssh.hostname').value)+'&amp;port='+escape(Form.findMatchingInput(this,'ssh.port').value)+'&amp;user='+escape(this.value)+'&amp;pass='+escape(Form.findMatchingInput(this,'ssh.password').value)+'&amp;keyfile='+escape(Form.findMatchingInput(this,'ssh.keyfile').value)"
 			/>
           </f:entry>
-          <f:entry title="Password/Passphrase" help="/plugin/ssh/help-password.html">
+          <f:entry title="${%Password/Passphrase}" help="/plugin/ssh/help-password.html">
             <input class="setting-input" name="ssh.password"
                    type="password" value="${site.password}"
 				   onchange="Form.findMatchingInput(this,'ssh.username').onchange()"				   
                     />
           </f:entry>
           
-          <f:entry title="Keyfile" help="/plugin/ssh/help-keyfile.html">
+          <f:entry title="${%Keyfile}" help="/plugin/ssh/help-keyfile.html">
           <f:textbox class="setting-input" name="ssh.keyfile"
                    value="${site.keyfile}"
                    checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/keyfileCheck?keyfile='+escape(this.value)"/>                   
