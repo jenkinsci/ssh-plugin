@@ -46,7 +46,7 @@ public class SSHBuilder extends Builder {
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 		SSHSite site = getSite();
-		if (site != null && command != null && !command.trim().isEmpty()) {
+		if (site != null && command != null && command.trim().length() > 0) {
 			listener.getLogger().printf("executing script:%n%s%n", command);
 			return site.executeCommand(listener.getLogger(), command) == 0;
 		}
