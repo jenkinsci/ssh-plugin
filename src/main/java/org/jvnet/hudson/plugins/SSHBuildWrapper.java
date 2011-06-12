@@ -131,7 +131,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		private final CopyOnWriteList<SSHSite> sites = new CopyOnWriteList<SSHSite>();
 
 		public String getDisplayName() {
-			return "Execute shell script on remote host using ssh";
+			return Messages.SSH_DisplayName();
 		}
 
 		public String getShortName() {

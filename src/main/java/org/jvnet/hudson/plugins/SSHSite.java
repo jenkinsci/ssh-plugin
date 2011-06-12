@@ -116,9 +116,10 @@ public class SSHSite {
 		return session;
 	}
 
-	public void executeCommand(PrintStream logger, String command) {
+	public int executeCommand(PrintStream logger, String command) {
 		Session session = null;
 		ChannelExec channel = null;
+		int status = -1;
 		try {
 			session = createSession(logger);
 			channel = createChannel(logger, session);
@@ -136,7 +137,8 @@ public class SSHSite {
 					logger.println(new String(tmp, 0, i));
 				}
 				if (channel.isClosed()) {
-					logger.println("[SSH] " + "exit-status: " + channel.getExitStatus());
+					status = channel.getExitStatus();
+					logger.println("[SSH] " + "exit-status: " + status);
 					break;
 				}
 				try {
@@ -162,6 +164,7 @@ public class SSHSite {
 			logger.println("[SSH] Exception:" + e.getMessage());
 			e.printStackTrace(logger);
 		}
+		return status;
 	}
 
 	public void testConnection(PrintStream logger) throws JSchException, IOException {
