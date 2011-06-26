@@ -57,28 +57,35 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		Environment env = new Environment() {
 			@Override
 			public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
-				executePostBuildScript(listener.getLogger());
+				if (!executePostBuildScript(listener.getLogger())) {
+					return false;
+				}
 				return super.tearDown(build, listener);
 			}
 		};
-		executePreBuildScript(listener.getLogger());
-		return env;
+		if (executePreBuildScript(listener.getLogger())) {
+			return env;
+		}
+		// build will fail.
+		return null;
 	}
 
-	private void executePreBuildScript(PrintStream logger) {
+	private boolean executePreBuildScript(PrintStream logger) {
 		log(logger, "executing pre build script:\n" + preScript);
 		SSHSite site = getSite();
 		if (preScript != null && !preScript.trim().equals("")) {
-			site.executeCommand(logger, preScript);
+			return site.executeCommand(logger, preScript) == 0;
 		}
+		return true;
 	}
 
-	private void executePostBuildScript(PrintStream logger) {
+	private boolean executePostBuildScript(PrintStream logger) {
 		log(logger, "executing post build script:\n" + postScript);
 		SSHSite site = getSite();
 		if (postScript != null && !postScript.trim().equals("")) {
-			site.executeCommand(logger, postScript);
+			return site.executeCommand(logger, postScript) == 0;
 		}
+		return true;
 	}
 
 	public String getPreScript() {
