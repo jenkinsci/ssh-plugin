@@ -15,7 +15,7 @@ Based on the cool scp plugin.</description>
 
 	<artifactId>ssh</artifactId>
 	<name>Jenkins SSH plugin</name>
-	<version>1.3-SNAPSHOT</version>
+	<version>1.3</version>
 	<packaging>hpi</packaging>
 	<url>http://wiki.jenkins-ci.org/display/JENKINS/SSH+plugin</url>
 
