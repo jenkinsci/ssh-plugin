@@ -51,4 +51,10 @@ Based on the cool scp plugin.</description>
 			<url>http://maven.glassfish.org/content/groups/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
+
+	<scm>
+		<connection>scm:git:git@github.com:jenkinsci/ssh-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:jenkinsci/ssh-plugin.git</developerConnection>
+	</scm>
+
 </project>
