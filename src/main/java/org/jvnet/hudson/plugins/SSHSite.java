@@ -134,7 +134,7 @@ public class SSHSite {
 					int i = in.read(tmp, 0, 1024);
 					if (i < 0)
 						break;
-					logger.println(new String(tmp, 0, i));
+					logger.print(new String(tmp, 0, i));
 				}
 				if (channel.isClosed()) {
 					status = channel.getExitStatus();
