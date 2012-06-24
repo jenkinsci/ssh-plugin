@@ -23,7 +23,6 @@ public class SSHBuilder extends Builder {
 
 	private String siteName;
 	private String command;
-	private String runtime_cmd;
 
 	@DataBoundConstructor
 	public SSHBuilder(String siteName, String command) {
@@ -48,19 +47,20 @@ public class SSHBuilder extends Builder {
 	}
 
 	@Override
-	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
+			BuildListener listener) throws InterruptedException, IOException {
 		SSHSite site = getSite();
 
-		runtime_cmd = new String(command);
-                EnvVars envVars = build.getEnvironment(listener);
-                // on Windows environment variables are converted to all upper case,
-                // but no such conversions are done on Unix, so to make this cross-platform,
-                // convert variables to all upper cases.
-                for(Map.Entry<String,String> e : build.getBuildVariables().entrySet()) {
-                    envVars.put(e.getKey(),e.getValue());
-		    runtime_cmd = runtime_cmd.replace(e.getKey(), e.getValue());
+		StringBuilder sb = new StringBuilder();
+		EnvVars envVars = build.getEnvironment(listener);
+		for (Map.Entry<String, String> e : build.getBuildVariables().entrySet()) {
+			envVars.put(e.getKey(), e.getValue());
+			sb.append("export "+ e.getKey()+ "=\""+e.getValue()+"\"\n");
 		}
-
+		//append original command
+		sb.append(command);
+		String runtime_cmd = sb.toString();
+		
 		if (site != null && command != null && command.trim().length() > 0) {
 			listener.getLogger().printf("executing script:%n%s%n", runtime_cmd);
 			return site.executeCommand(listener.getLogger(), runtime_cmd) == 0;
@@ -91,7 +91,8 @@ public class SSHBuilder extends Builder {
 		}
 
 		@Override
-		public Builder newInstance(StaplerRequest req, JSONObject formData) throws hudson.model.Descriptor.FormException {
+		public Builder newInstance(StaplerRequest req, JSONObject formData)
+				throws hudson.model.Descriptor.FormException {
 			return req.bindJSON(clazz, formData);
 		}
 
