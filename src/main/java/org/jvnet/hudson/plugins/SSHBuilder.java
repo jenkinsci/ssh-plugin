@@ -12,6 +12,7 @@ import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
@@ -51,17 +52,12 @@ public class SSHBuilder extends Builder {
 			BuildListener listener) throws InterruptedException, IOException {
 		SSHSite site = getSite();
 
-		StringBuilder sb = new StringBuilder();
-		EnvVars envVars = build.getEnvironment(listener);
-		for (Map.Entry<String, String> e : build.getBuildVariables().entrySet()) {
-			envVars.put(e.getKey(), e.getValue());
-			sb.append("export "+ e.getKey()+ "=\""+e.getValue()+"\"\n");
-		}
-		//append original command
-		sb.append(command);
-		String runtime_cmd = sb.toString();
+		Map<String, String> vars = new HashMap<String, String>(); 
+		vars.putAll(build.getEnvironment(listener));
+		vars.putAll(build.getBuildVariables());
+		String runtime_cmd = VariableReplacerUtil.replace(command, vars);
 		
-		if (site != null && command != null && command.trim().length() > 0) {
+		if (site != null && runtime_cmd != null && runtime_cmd.trim().length() > 0) {
 			listener.getLogger().printf("executing script:%n%s%n", runtime_cmd);
 			return site.executeCommand(listener.getLogger(), runtime_cmd) == 0;
 		}

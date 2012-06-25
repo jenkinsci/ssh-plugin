@@ -15,7 +15,9 @@ import hudson.util.FormValidation;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,33 +59,43 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		Environment env = new Environment() {
 			@Override
 			public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
-				if (!executePostBuildScript(listener.getLogger())) {
+				if (!executePostBuildScript(build,listener)) {
 					return false;
 				}
 				return super.tearDown(build, listener);
 			}
 		};
-		if (executePreBuildScript(listener.getLogger())) {
+		if (executePreBuildScript(build, listener)) {
 			return env;
 		}
 		// build will fail.
 		return null;
 	}
 
-	private boolean executePreBuildScript(PrintStream logger) {
-		log(logger, "executing pre build script:\n" + preScript);
+	private boolean executePreBuildScript(AbstractBuild<?, ?> build, BuildListener listener) throws IOException, InterruptedException {
+		PrintStream logger = listener.getLogger();
 		SSHSite site = getSite();
-		if (preScript != null && !preScript.trim().equals("")) {
-			return site.executeCommand(logger, preScript) == 0;
+		Map<String, String> vars = new HashMap<String, String>(); 
+		vars.putAll(build.getEnvironment(listener));
+		vars.putAll(build.getBuildVariables());
+		String runtime_cmd = VariableReplacerUtil.replace(preScript, vars);
+		log(logger, "executing pre build script:\n" + runtime_cmd);
+		if (runtime_cmd != null && !runtime_cmd.trim().equals("")) {
+			return site.executeCommand(logger, runtime_cmd) == 0;
 		}
 		return true;
 	}
 
-	private boolean executePostBuildScript(PrintStream logger) {
-		log(logger, "executing post build script:\n" + postScript);
+	private boolean executePostBuildScript(AbstractBuild<?, ?> build, BuildListener listener) throws IOException, InterruptedException {
+		PrintStream logger = listener.getLogger();
 		SSHSite site = getSite();
-		if (postScript != null && !postScript.trim().equals("")) {
-			return site.executeCommand(logger, postScript) == 0;
+		Map<String, String> vars = new HashMap<String, String>(); 
+		vars.putAll(build.getEnvironment(listener));
+		vars.putAll(build.getBuildVariables());
+		String runtime_cmd = VariableReplacerUtil.replace(postScript, vars);
+		log(logger, "executing post build script:\n" + runtime_cmd);
+		if (runtime_cmd != null && !runtime_cmd.trim().equals("")) {
+			return site.executeCommand(logger, runtime_cmd) == 0;
 		}
 		return true;
 	}
