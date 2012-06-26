@@ -18,27 +18,23 @@ public class SSHSite {
 	String password;
 	String keyfile;
 
-	public static final Logger LOGGER = Logger.getLogger(SSHSite.class.getName());
+	public static final Logger LOGGER = Logger.getLogger(SSHSite.class
+			.getName());
 
 	public SSHSite() {
 
 	}
 
-	public SSHSite(String hostname, String port, String username, String password) {
+	public SSHSite(String hostname, String port, String username,
+			String password, String keyfile) {
 		this.hostname = hostname;
 		try {
 			this.port = Integer.parseInt(port);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			this.port = 22;
 		}
 		this.username = username;
 		this.password = password;
-	}
-
-	public SSHSite(String hostname, String port, String username, String passphrase, String keyfile) {
-		this(hostname, port, username, passphrase);
-
 		this.keyfile = keyfile;
 	}
 
@@ -65,8 +61,7 @@ public class SSHSite {
 	public void setPort(String port) {
 		try {
 			this.port = Integer.parseInt(port);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			this.port = 22;
 		}
 	}
@@ -91,8 +86,8 @@ public class SSHSite {
 		this.password = password;
 	}
 
-	public String getName() {
-		return hostname;
+	public String getSitename() {
+		return username + "@" + hostname + ":" + port;
 	}
 
 	private Session createSession(PrintStream logger) throws JSchException {
@@ -143,13 +138,11 @@ public class SSHSite {
 				}
 				try {
 					Thread.sleep(1000);
-				}
-				catch (Exception ee) {
+				} catch (Exception ee) {
 				}
 			}
 			closeSession(logger, session, channel);
-		}
-		catch (JSchException e) {
+		} catch (JSchException e) {
 			logger.println("[SSH] Exception:" + e.getMessage());
 			e.printStackTrace(logger);
 			if (channel != null && channel.isConnected()) {
@@ -159,25 +152,27 @@ public class SSHSite {
 				session.disconnect();
 			}
 			session = null;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			logger.println("[SSH] Exception:" + e.getMessage());
 			e.printStackTrace(logger);
 		}
 		return status;
 	}
 
-	public void testConnection(PrintStream logger) throws JSchException, IOException {
+	public void testConnection(PrintStream logger) throws JSchException,
+			IOException {
 		Session session = createSession(logger);
 		closeSession(logger, session, null);
 	}
 
-	private ChannelExec createChannel(PrintStream logger, Session session) throws JSchException {
+	private ChannelExec createChannel(PrintStream logger, Session session)
+			throws JSchException {
 		ChannelExec channel = (ChannelExec) session.openChannel("exec");
 		return channel;
 	}
 
-	private void closeSession(PrintStream logger, Session session, ChannelExec channel) {
+	private void closeSession(PrintStream logger, Session session,
+			ChannelExec channel) {
 		if (channel != null) {
 			channel.disconnect();
 			channel = null;
@@ -190,7 +185,8 @@ public class SSHSite {
 
 	@Override
 	public String toString() {
-		return "SSHSite [hostname=" + hostname + ", keyfile=" + keyfile + ", port=" + port + ", username=" + username + "]";
+		return "SSHSite [hostname=" + hostname
+				+ ", port=" + port + ", username=" + username + ", password="
+				+ password + ", keyfile=" + keyfile + "]";
 	}
-
 }

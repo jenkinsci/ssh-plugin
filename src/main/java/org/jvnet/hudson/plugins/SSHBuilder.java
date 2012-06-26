@@ -2,8 +2,6 @@ package org.jvnet.hudson.plugins;
 
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.Util;
-import hudson.EnvVars;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -67,7 +65,7 @@ public class SSHBuilder extends Builder {
 	public SSHSite getSite() {
 		SSHSite[] sites = SSHBuildWrapper.DESCRIPTOR.getSites();
 		for (SSHSite site : sites) {
-			if (site.getName().equals(siteName))
+			if (site.getSitename().equals(siteName))
 				return site;
 		}
 		return null;
@@ -95,7 +93,7 @@ public class SSHBuilder extends Builder {
 		public ListBoxModel doFillSiteNameItems() {
 			ListBoxModel m = new ListBoxModel();
 			for (SSHSite site : SSHBuildWrapper.DESCRIPTOR.getSites()) {
-				m.add(site.getName());
+				m.add(site.getSitename());
 			}
 			return m;
 		}

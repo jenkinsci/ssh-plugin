@@ -3,9 +3,9 @@ package org.jvnet.hudson.plugins;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.Util;
+import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,8 +45,9 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		if (siteName == null) {
 			// defaults to the first one
 			SSHSite[] sites = DESCRIPTOR.getSites();
-			if (sites.length > 0)
-				siteName = sites[0].getName();
+			if (sites.length > 0){
+				siteName = sites[0].getSitename();
+			}
 		}
 		this.siteName = siteName;
 		this.preScript = preScript;
@@ -118,12 +118,12 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 	public SSHSite getSite() {
 		SSHSite[] sites = DESCRIPTOR.getSites();
-		if (siteName == null && sites.length > 0)
-			// default
-			return sites[0];
+		if (siteName == null && sites.length > 0){
+			return sites[0]; 	// default
+		}
 
 		for (SSHSite site : sites) {
-			if (site.getName().equals(siteName))
+			if (site.getSitename().equals(siteName))
 				return site;
 		}
 		return null;
@@ -149,6 +149,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 		private final CopyOnWriteList<SSHSite> sites = new CopyOnWriteList<SSHSite>();
 
+		@Override
 		public String getDisplayName() {
 			return Messages.SSH_DisplayName();
 		}
@@ -170,13 +171,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		}
 
 		public SSHSite[] getSites() {
-			Iterator<SSHSite> it = sites.iterator();
-			int size = 0;
-			while (it.hasNext()) {
-				it.next();
-				size++;
-			}
-			return sites.toArray(new SSHSite[size]);
+			return sites.toArray(new SSHSite[0]);
 		}
 
 		@Override
