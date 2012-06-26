@@ -119,8 +119,7 @@ public class SSHSite {
 			session = createSession(logger);
 			channel = createChannel(logger, session);
 			channel.setCommand(command);
-			channel.setOutputStream(logger);
-			channel.setInputStream(null);
+			
 			InputStream in = channel.getInputStream();
 			channel.connect();
 			byte[] tmp = new byte[1024];
@@ -168,6 +167,10 @@ public class SSHSite {
 	private ChannelExec createChannel(PrintStream logger, Session session)
 			throws JSchException {
 		ChannelExec channel = (ChannelExec) session.openChannel("exec");
+		channel.setOutputStream(logger,true);
+		channel.setExtOutputStream(logger, true);
+		channel.setInputStream(null);
+		channel.setPty(true);
 		return channel;
 	}
 
