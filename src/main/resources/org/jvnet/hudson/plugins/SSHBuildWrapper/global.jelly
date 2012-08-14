@@ -30,6 +30,10 @@
                    checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/keyfileCheck?keyfile='+escape(this.value)"/>                   
           </f:entry>
           
+          <f:entry title="${%Pty}" help="/plugin/ssh/help-pty.html">
+            <f:checkbox class="setting-input" name="ssh.pty" checked="${site.pty}"/>
+          </f:entry>
+          
           <f:entry title="">
             <div align="right">
               <f:repeatableDeleteButton />

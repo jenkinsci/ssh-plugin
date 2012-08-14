@@ -17,6 +17,7 @@ public class SSHSite {
 	String username;
 	String password;
 	String keyfile;
+	Boolean pty = Boolean.FALSE;
 
 	public static final Logger LOGGER = Logger.getLogger(SSHSite.class
 			.getName());
@@ -64,6 +65,14 @@ public class SSHSite {
 		} catch (Exception e) {
 			this.port = 22;
 		}
+	}
+
+	public void setPty(Boolean pty) {
+		this.pty = pty;
+	}
+
+	public Boolean getPty() {
+		return pty;
 	}
 
 	public int getIntegerPort() {
@@ -119,7 +128,7 @@ public class SSHSite {
 			session = createSession(logger);
 			channel = createChannel(logger, session);
 			channel.setCommand(command);
-			
+
 			InputStream in = channel.getInputStream();
 			channel.connect();
 			byte[] tmp = new byte[1024];
@@ -167,10 +176,10 @@ public class SSHSite {
 	private ChannelExec createChannel(PrintStream logger, Session session)
 			throws JSchException {
 		ChannelExec channel = (ChannelExec) session.openChannel("exec");
-		channel.setOutputStream(logger,true);
+		channel.setOutputStream(logger, true);
 		channel.setExtOutputStream(logger, true);
 		channel.setInputStream(null);
-		channel.setPty(true);
+		channel.setPty(pty);
 		return channel;
 	}
 
@@ -188,8 +197,9 @@ public class SSHSite {
 
 	@Override
 	public String toString() {
-		return "SSHSite [hostname=" + hostname
-				+ ", port=" + port + ", username=" + username + ", password="
-				+ password + ", keyfile=" + keyfile + "]";
+		return "SSHSite [hostname=" + hostname + ", port=" + port
+				+ ", username=" + username + ", password=" + password
+				+ ", keyfile=" + keyfile + ", pty=" + pty + "]";
 	}
+
 }
