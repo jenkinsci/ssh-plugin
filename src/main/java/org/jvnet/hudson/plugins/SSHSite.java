@@ -179,7 +179,11 @@ public class SSHSite {
 		channel.setOutputStream(logger, true);
 		channel.setExtOutputStream(logger, true);
 		channel.setInputStream(null);
+		if(pty == null) {
+			pty = Boolean.FALSE;
+		}
 		channel.setPty(pty);
+		
 		return channel;
 	}
 
