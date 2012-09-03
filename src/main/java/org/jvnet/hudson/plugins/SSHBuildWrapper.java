@@ -11,6 +11,7 @@ import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.CopyOnWriteList;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,13 +43,6 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 	@DataBoundConstructor
 	public SSHBuildWrapper(String siteName, String preScript, String postScript) {
-		if (siteName == null) {
-			// defaults to the first one
-			SSHSite[] sites = DESCRIPTOR.getSites();
-			if (sites.length > 0){
-				siteName = sites[0].getSitename();
-			}
-		}
 		this.siteName = siteName;
 		this.preScript = preScript;
 		this.postScript = postScript;
@@ -118,9 +112,6 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 	public SSHSite getSite() {
 		SSHSite[] sites = DESCRIPTOR.getSites();
-		if (siteName == null && sites.length > 0){
-			return sites[0]; 	// default
-		}
 
 		for (SSHSite site : sites) {
 			if (site.getSitename().equals(siteName))
@@ -153,6 +144,14 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		public String getDisplayName() {
 			return Messages.SSH_DisplayName();
 		}
+		
+		public ListBoxModel doFillSiteNameItems() {
+			ListBoxModel m = new ListBoxModel();
+			for (SSHSite site : SSHBuildWrapper.DESCRIPTOR.getSites()) {
+				m.add(site.getSitename());
+			}
+			return m;
+		}
 
 		public String getShortName() {
 			return "[SSH] ";
@@ -165,9 +164,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 		@Override
 		public BuildWrapper newInstance(StaplerRequest req, JSONObject formData) {
-			SSHBuildWrapper pub = new SSHBuildWrapper();
-			req.bindParameters(pub, "ssh.");
-			return pub;
+			return req.bindJSON(clazz, formData);
 		}
 
 		public SSHSite[] getSites() {
