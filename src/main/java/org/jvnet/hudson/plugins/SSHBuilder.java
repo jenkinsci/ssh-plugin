@@ -2,21 +2,19 @@ package org.jvnet.hudson.plugins;
 
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import net.sf.json.JSONObject;
-
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
 
 public class SSHBuilder extends Builder {
 
@@ -46,8 +44,7 @@ public class SSHBuilder extends Builder {
 	}
 
 	@Override
-	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-			BuildListener listener) throws InterruptedException, IOException {
+	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 		SSHSite site = getSite();
 
 		Map<String, String> vars = new HashMap<String, String>(); 
@@ -85,8 +82,7 @@ public class SSHBuilder extends Builder {
 		}
 
 		@Override
-		public Builder newInstance(StaplerRequest req, JSONObject formData)
-				throws hudson.model.Descriptor.FormException {
+		public Builder newInstance(StaplerRequest req, JSONObject formData) throws hudson.model.Descriptor.FormException {
 			return req.bindJSON(clazz, formData);
 		}
 

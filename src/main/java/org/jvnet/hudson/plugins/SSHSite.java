@@ -1,15 +1,15 @@
 package org.jvnet.hudson.plugins;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.logging.Logger;
-
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.logging.Logger;
 
 public class SSHSite {
 	String hostname;
@@ -17,17 +17,16 @@ public class SSHSite {
 	String username;
 	String password;
 	String keyfile;
+	int serverAliveInterval = 0;
 	Boolean pty = Boolean.FALSE;
 
-	public static final Logger LOGGER = Logger.getLogger(SSHSite.class
-			.getName());
+	public static final Logger LOGGER = Logger.getLogger(SSHSite.class.getName());
 
 	public SSHSite() {
 
 	}
 
-	public SSHSite(String hostname, String port, String username,
-			String password, String keyfile) {
+	public SSHSite(String hostname, String port, String username, String password, String keyfile, String serverAliveInterval) {
 		this.hostname = hostname;
 		try {
 			this.port = Integer.parseInt(port);
@@ -37,6 +36,7 @@ public class SSHSite {
 		this.username = username;
 		this.password = password;
 		this.keyfile = keyfile;
+		this.setServerAliveInterval(serverAliveInterval);
 	}
 
 	public String getKeyfile() {
@@ -64,6 +64,18 @@ public class SSHSite {
 			this.port = Integer.parseInt(port);
 		} catch (Exception e) {
 			this.port = 22;
+		}
+	}
+
+	public String getServerAliveInterval() {
+		return "" + serverAliveInterval;
+	}
+
+	public void setServerAliveInterval(String serverAliveInterval) {
+		try {
+			this.serverAliveInterval = Integer.parseInt(serverAliveInterval);
+		} catch (Exception e) {
+			this.serverAliveInterval = 0;
 		}
 	}
 
@@ -111,6 +123,8 @@ public class SSHSite {
 
 		UserInfo ui = new SSHUserInfo(password);
 		session.setUserInfo(ui);
+
+		session.setServerAliveInterval(serverAliveInterval);
 
 		java.util.Properties config = new java.util.Properties();
 		config.put("StrictHostKeyChecking", "no");
@@ -167,28 +181,25 @@ public class SSHSite {
 		return status;
 	}
 
-	public void testConnection(PrintStream logger) throws JSchException,
-			IOException {
+	public void testConnection(PrintStream logger) throws JSchException, IOException {
 		Session session = createSession(logger);
 		closeSession(logger, session, null);
 	}
 
-	private ChannelExec createChannel(PrintStream logger, Session session)
-			throws JSchException {
+	private ChannelExec createChannel(PrintStream logger, Session session) throws JSchException {
 		ChannelExec channel = (ChannelExec) session.openChannel("exec");
 		channel.setOutputStream(logger, true);
 		channel.setExtOutputStream(logger, true);
 		channel.setInputStream(null);
-		if(pty == null) {
+		if (pty == null) {
 			pty = Boolean.FALSE;
 		}
 		channel.setPty(pty);
-		
+
 		return channel;
 	}
 
-	private void closeSession(PrintStream logger, Session session,
-			ChannelExec channel) {
+	private void closeSession(PrintStream logger, Session session, ChannelExec channel) {
 		if (channel != null) {
 			channel.disconnect();
 			channel = null;
@@ -202,8 +213,8 @@ public class SSHSite {
 	@Override
 	public String toString() {
 		return "SSHSite [hostname=" + hostname + ", port=" + port
-				+ ", username=" + username + ", password=" + password
-				+ ", keyfile=" + keyfile + ", pty=" + pty + "]";
+				  + ", username=" + username + ", password=" + password
+				  + ", keyfile=" + keyfile + ", pty=" + pty + "]";
 	}
 
 }

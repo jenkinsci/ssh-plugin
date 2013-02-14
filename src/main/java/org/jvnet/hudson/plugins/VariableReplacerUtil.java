@@ -11,7 +11,7 @@ public class VariableReplacerUtil {
 		StringBuilder sb = new StringBuilder();
 		for (String variable : vars.keySet()) {
 			if (originalCommand.contains(variable) ) {
-				sb.append(variable + "=\"" + vars.get(variable)	+ "\"\n");
+				sb.append(variable).append("=\"").append(vars.get(variable)).append("\"\n");
 			}
 		}
 		sb.append("\n");

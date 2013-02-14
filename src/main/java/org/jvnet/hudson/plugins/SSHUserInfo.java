@@ -1,9 +1,7 @@
 package org.jvnet.hudson.plugins;
 
 import com.jcraft.jsch.UserInfo;
-import java.util.logging.Logger;;
-
- 
+import java.util.logging.Logger;
 
 public class SSHUserInfo implements UserInfo {
 
