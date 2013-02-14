@@ -6,7 +6,7 @@ Based on the cool scp plugin.</description>
 	<parent>
 		<groupId>org.jvnet.hudson.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.358</version>
+		<version>1.389</version>
 		<!--
 			which version of Hudson is this plugin built against?
 		-->
