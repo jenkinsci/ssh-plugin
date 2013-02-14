@@ -20,20 +20,24 @@
           <f:entry title="${%Password/Passphrase}" help="/plugin/ssh/help-password.html">
             <input class="setting-input" name="ssh.password"
                    type="password" value="${site.password}"
-				   onchange="Form.findMatchingInput(this,'ssh.username').onchange()"				   
+				   onchange="Form.findMatchingInput(this,'ssh.username').onchange()"
                     />
           </f:entry>
-          
+
           <f:entry title="${%Keyfile}" help="/plugin/ssh/help-keyfile.html">
           <f:textbox class="setting-input" name="ssh.keyfile"
                    value="${site.keyfile}"
-                   checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/keyfileCheck?keyfile='+escape(this.value)"/>                   
+                   checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/keyfileCheck?keyfile='+escape(this.value)"/>
           </f:entry>
-          
+
           <f:entry title="${%Pty}" help="/plugin/ssh/help-pty.html">
             <f:checkbox class="setting-input" name="ssh.pty" checked="${site.pty}"/>
           </f:entry>
-          
+
+	       <f:entry title="${%serverAliveInterval}" help="/plugin/ssh/help-serverAliveInterval.html">
+		      <f:textbox name="ssh.serverAliveInterval" value="${site.serverAliveInterval}"/>
+	       </f:entry>
+
           <f:entry title="">
             <div align="right">
               <f:repeatableDeleteButton />
