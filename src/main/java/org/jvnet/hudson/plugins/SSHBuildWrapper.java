@@ -1,17 +1,23 @@
 package org.jvnet.hudson.plugins;
 
+import com.jcraft.jsch.JSchException;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.CopyOnWriteList;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,15 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import net.sf.json.JSONObject;
-
-import org.apache.commons.lang.StringUtils;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-
-import com.jcraft.jsch.JSchException;
 
 public final class SSHBuildWrapper extends BuildWrapper {
 
@@ -53,7 +50,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		Environment env = new Environment() {
 			@Override
 			public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
-				if (!executePostBuildScript(build,listener)) {
+				if (!executePostBuildScript(build, listener)) {
 					return false;
 				}
 				return super.tearDown(build, listener);
@@ -69,7 +66,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 	private boolean executePreBuildScript(AbstractBuild<?, ?> build, BuildListener listener) throws IOException, InterruptedException {
 		PrintStream logger = listener.getLogger();
 		SSHSite site = getSite();
-		Map<String, String> vars = new HashMap<String, String>(); 
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.replace(preScript, vars);
@@ -83,7 +80,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 	private boolean executePostBuildScript(AbstractBuild<?, ?> build, BuildListener listener) throws IOException, InterruptedException {
 		PrintStream logger = listener.getLogger();
 		SSHSite site = getSite();
-		Map<String, String> vars = new HashMap<String, String>(); 
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.replace(postScript, vars);
@@ -144,7 +141,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		public String getDisplayName() {
 			return Messages.SSH_DisplayName();
 		}
-		
+
 		public ListBoxModel doFillSiteNameItems() {
 			ListBoxModel m = new ListBoxModel();
 			for (SSHSite site : SSHBuildWrapper.DESCRIPTOR.getSites()) {
@@ -195,17 +192,16 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			if (hostname == null) {// hosts is not entered yet
 				return FormValidation.ok();
 			}
-			SSHSite site = new SSHSite(hostname, request.getParameter("port"), request.getParameter("user"), request.getParameter("pass"), request.getParameter("keyfile"));
+			SSHSite site = new SSHSite(hostname, request.getParameter("port"), request.getParameter("user"), request.getParameter("pass"),
+					  request.getParameter("keyfile"), request.getParameter("serverAliveInterval"));
 			try {
 				try {
 					site.testConnection(System.out);
-				}
-				catch (JSchException e) {
+				} catch (JSchException e) {
 					LOGGER.log(Level.SEVERE, e.getMessage());
 					throw new IOException("Can't connect to server");
 				}
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage());
 				return FormValidation.error(e.getMessage());
 			}
@@ -225,7 +221,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 	public void setSiteName(String siteName) {
 		this.siteName = siteName;
-	};
+	}
 
 	private void log(final PrintStream logger, final String message) {
 		logger.println(StringUtils.defaultString(DESCRIPTOR.getShortName()) + message);
