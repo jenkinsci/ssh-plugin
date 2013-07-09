@@ -1,16 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<description>Execute shell scripts on remote host
 using ssh (pre and post build).
 Based on the cool scp plugin.</description>
 	<parent>
-		<groupId>org.jvnet.hudson.plugins</groupId>
+		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.389</version>
-		<!--
-			which version of Hudson is this plugin built against?
-		-->
-		<relativePath>../pom.xml</relativePath>
+		<version>1.424</version>
 	</parent>
 
 	<artifactId>ssh</artifactId>
@@ -52,10 +49,8 @@ Based on the cool scp plugin.</description>
 		</repository>
 	</distributionManagement>
 
-	<!--
-		get every artifact through maven.glassfish.org, which proxies all the
-		artifacts that we need
-	-->
+	<!-- get every artifact through maven.glassfish.org, which proxies all the 
+		artifacts that we need -->
 	<repositories>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
