@@ -134,7 +134,7 @@ public class SSHSite {
 		return session;
 	}
 
-	public int executeCommand(PrintStream logger, String command) {
+	public int executeCommand(PrintStream logger, String command) throws InterruptedException {
 		Session session = null;
 		ChannelExec channel = null;
 		int status = -1;
@@ -158,10 +158,7 @@ public class SSHSite {
 					logger.println("[SSH] " + "exit-status: " + status);
 					break;
 				}
-				try {
-					Thread.sleep(1000);
-				} catch (Exception ee) {
-				}
+                Thread.sleep(1000);
 			}
 			closeSession(logger, session, channel);
 		} catch (JSchException e) {
