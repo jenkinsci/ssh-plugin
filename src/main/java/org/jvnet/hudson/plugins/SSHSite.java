@@ -158,6 +158,7 @@ public class SSHSite {
 					logger.println("[SSH] " + "exit-status: " + status);
 					break;
 				}
+                logger.flush();
                 Thread.sleep(1000);
 			}
 			closeSession(session, channel);
