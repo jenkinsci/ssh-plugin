@@ -111,7 +111,7 @@ public class SSHSite {
 		return username + "@" + hostname + ":" + port;
 	}
 
-	private Session createSession(PrintStream logger) throws JSchException {
+	private Session createSession() throws JSchException {
 		JSch jsch = new JSch();
 
 		Session session = jsch.getSession(username, hostname, port);
@@ -139,7 +139,7 @@ public class SSHSite {
 		ChannelExec channel = null;
 		int status = -1;
 		try {
-			session = createSession(logger);
+			session = createSession();
 			channel = createChannel(logger, session);
 			channel.setCommand(command);
 
@@ -160,7 +160,7 @@ public class SSHSite {
 				}
                 Thread.sleep(1000);
 			}
-			closeSession(logger, session, channel);
+			closeSession(session, channel);
 		} catch (JSchException e) {
 			logger.println("[SSH] Exception:" + e.getMessage());
 			e.printStackTrace(logger);
@@ -178,8 +178,8 @@ public class SSHSite {
 	}
 
 	public void testConnection(PrintStream logger) throws JSchException, IOException {
-		Session session = createSession(logger);
-		closeSession(logger, session, null);
+		Session session = createSession();
+		closeSession(session, null);
 	}
 
 	private ChannelExec createChannel(PrintStream logger, Session session) throws JSchException {
@@ -195,7 +195,7 @@ public class SSHSite {
 		return channel;
 	}
 
-	private void closeSession(PrintStream logger, Session session, ChannelExec channel) {
+	private void closeSession(Session session, ChannelExec channel) {
 		if (channel != null) {
 			channel.disconnect();
 		}
