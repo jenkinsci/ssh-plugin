@@ -170,7 +170,6 @@ public class SSHSite {
 			if (session != null && session.isConnected()) {
 				session.disconnect();
 			}
-			session = null;
 		} catch (IOException e) {
 			logger.println("[SSH] Exception:" + e.getMessage());
 			e.printStackTrace(logger);
@@ -199,11 +198,9 @@ public class SSHSite {
 	private void closeSession(PrintStream logger, Session session, ChannelExec channel) {
 		if (channel != null) {
 			channel.disconnect();
-			channel = null;
 		}
 		if (session != null) {
 			session.disconnect();
-			session = null;
 		}
 	}
 
