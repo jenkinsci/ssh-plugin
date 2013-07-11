@@ -30,7 +30,7 @@ public class SSHSite {
 		this.hostname = hostname;
 		try {
 			this.port = Integer.parseInt(port);
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 			this.port = 22;
 		}
 		this.username = username;
@@ -62,7 +62,7 @@ public class SSHSite {
 	public void setPort(String port) {
 		try {
 			this.port = Integer.parseInt(port);
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 			this.port = 22;
 		}
 	}
@@ -74,7 +74,7 @@ public class SSHSite {
 	public void setServerAliveInterval(String serverAliveInterval) {
 		try {
 			this.serverAliveInterval = Integer.parseInt(serverAliveInterval);
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 			this.serverAliveInterval = 0;
 		}
 	}
