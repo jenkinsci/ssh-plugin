@@ -19,6 +19,7 @@ public class SSHSite {
 	String keyfile;
 	int serverAliveInterval = 0;
 	Boolean pty = Boolean.FALSE;
+	transient String resolvedHostname = null;
 
 	public static final Logger LOGGER = Logger.getLogger(SSHSite.class.getName());
 
@@ -110,11 +111,19 @@ public class SSHSite {
 	public String getSitename() {
 		return username + "@" + hostname + ":" + port;
 	}
+	
+	public void setResolvedHostname(String hostname) {
+		this.resolvedHostname = hostname;
+	}
+	
+	private String getResolvedHostname() {
+		return resolvedHostname == null ? hostname : resolvedHostname;
+	}
 
 	private Session createSession() throws JSchException {
 		JSch jsch = new JSch();
 
-		Session session = jsch.getSession(username, hostname, port);
+		Session session = jsch.getSession(username, getResolvedHostname(), port);
 		if (this.keyfile != null && this.keyfile.length() > 0) {
 			jsch.addIdentity(this.keyfile, this.password);
 		} else {
