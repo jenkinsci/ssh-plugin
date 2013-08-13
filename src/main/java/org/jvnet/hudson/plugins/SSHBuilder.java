@@ -46,7 +46,10 @@ public class SSHBuilder extends Builder {
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 		SSHSite site = getSite();
-
+		
+		// Get the build variables and make sure we substitute the current SSH Server host name
+		site.setResolvedHostname(build.getEnvironment(listener).expand(site.getHostname()));
+		
 		Map<String, String> vars = new HashMap<String, String>(); 
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
