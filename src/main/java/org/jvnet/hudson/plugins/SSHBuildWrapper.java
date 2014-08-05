@@ -193,7 +193,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 				return FormValidation.ok();
 			}
 			SSHSite site = new SSHSite(hostname, request.getParameter("port"), request.getParameter("user"), request.getParameter("pass"),
-					  request.getParameter("keyfile"), request.getParameter("serverAliveInterval"));
+					  request.getParameter("keyfile"), request.getParameter("serverAliveInterval"), request.getParameter("timeout"));
 			try {
 				try {
 					site.testConnection(System.out);

@@ -38,6 +38,10 @@
 		      <f:textbox name="ssh.serverAliveInterval" value="${site.serverAliveInterval}"/>
 	       </f:entry>
 
+	       <f:entry title="${%timeout}" help="/plugin/ssh/help-timeout.html">
+		      <f:textbox name="ssh.timeout" value="${site.timeout}"/>
+	       </f:entry>
+
           <f:entry title="">
             <div align="right">
               <f:repeatableDeleteButton />

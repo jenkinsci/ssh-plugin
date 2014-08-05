@@ -18,6 +18,7 @@ public class SSHSite {
 	String password;
 	String keyfile;
 	int serverAliveInterval = 0;
+	int timeout = 0;
 	Boolean pty = Boolean.FALSE;
 	transient String resolvedHostname = null;
 
@@ -27,7 +28,7 @@ public class SSHSite {
 
 	}
 
-	public SSHSite(String hostname, String port, String username, String password, String keyfile, String serverAliveInterval) {
+	public SSHSite(String hostname, String port, String username, String password, String keyfile, String serverAliveInterval, final String timeout) {
 		this.hostname = hostname;
 		try {
 			this.port = Integer.parseInt(port);
@@ -38,6 +39,7 @@ public class SSHSite {
 		this.password = password;
 		this.keyfile = keyfile;
 		this.setServerAliveInterval(serverAliveInterval);
+		this.setTimeout(timeout);
 	}
 
 	public String getKeyfile() {
@@ -71,7 +73,7 @@ public class SSHSite {
 	public String getServerAliveInterval() {
 		return "" + serverAliveInterval;
 	}
-
+	
 	public void setServerAliveInterval(String serverAliveInterval) {
 		try {
 			this.serverAliveInterval = Integer.parseInt(serverAliveInterval);
@@ -119,6 +121,18 @@ public class SSHSite {
 	private String getResolvedHostname() {
 		return resolvedHostname == null ? hostname : resolvedHostname;
 	}
+	
+	public String getTimeout() {
+        return "" + timeout;
+    }
+	
+	 public void setTimeout(final String timeout) {
+        try {
+            this.timeout = Integer.parseInt(timeout);
+        } catch (NumberFormatException e) {
+            this.timeout = 0;
+        }
+    }
 
 	private Session createSession() throws JSchException {
 		JSch jsch = new JSch();
@@ -138,7 +152,7 @@ public class SSHSite {
 		java.util.Properties config = new java.util.Properties();
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
-		session.connect();
+		session.connect(timeout);
 
 		return session;
 	}
