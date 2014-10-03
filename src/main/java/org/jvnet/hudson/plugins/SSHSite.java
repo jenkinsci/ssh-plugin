@@ -16,6 +16,7 @@ public class SSHSite {
 	int port;
 	String username;
 	String password;
+	String credentialId;
 	String keyfile;
 	int serverAliveInterval = 0;
 	int timeout = 0;
@@ -29,6 +30,11 @@ public class SSHSite {
 	}
 
 	public SSHSite(String hostname, String port, String username, String password, String keyfile, String serverAliveInterval, final String timeout) {
+		this(hostname, port, username, password, keyfile,
+				serverAliveInterval, timeout, null);
+	}
+
+	public SSHSite(String hostname, String port, String username, String password, String keyfile, String serverAliveInterval, final String timeout,final String credentialId) {
 		this.hostname = hostname;
 		try {
 			this.port = Integer.parseInt(port);
@@ -40,6 +46,7 @@ public class SSHSite {
 		this.keyfile = keyfile;
 		this.setServerAliveInterval(serverAliveInterval);
 		this.setTimeout(timeout);
+		this.credentialId = credentialId;
 	}
 
 	public String getKeyfile() {
@@ -134,14 +141,28 @@ public class SSHSite {
         }
     }
 
-	private Session createSession() throws JSchException {
-		JSch jsch = new JSch();
+	public String getCredentialId() {
+		return credentialId;
+	}
 
-		Session session = jsch.getSession(username, getResolvedHostname(), port);
-		if (this.keyfile != null && this.keyfile.length() > 0) {
-			jsch.addIdentity(this.keyfile, this.password);
+	public void setCredentialId(String credentialId) {
+		this.credentialId = credentialId;
+	}
+
+	private Session createSession(final PrintStream logger) throws JSchException, IOException, InterruptedException {
+		final Session session;
+
+		if (CredentialsUtil.isAvailable() && credentialId != null && !"".equals(credentialId)) {
+			session = CredentialsUtil.createSession(hostname, port, credentialId, logger);
 		} else {
-			session.setPassword(password);
+			JSch jsch = new JSch();
+	
+			session = jsch.getSession(username, getResolvedHostname(), port);
+			if (this.keyfile != null && this.keyfile.length() > 0) {
+				jsch.addIdentity(this.keyfile, this.password);
+			} else {
+				session.setPassword(password);
+			}
 		}
 
 		UserInfo ui = new SSHUserInfo(password);
@@ -162,7 +183,7 @@ public class SSHSite {
 		ChannelExec channel = null;
 		int status = -1;
 		try {
-			session = createSession();
+			session = createSession(logger);
 			channel = createChannel(logger, session);
 			channel.setCommand(command);
 
@@ -201,8 +222,8 @@ public class SSHSite {
 		return status;
 	}
 
-	public void testConnection(PrintStream logger) throws JSchException, IOException {
-		Session session = createSession();
+	public void testConnection(PrintStream logger) throws JSchException, IOException, InterruptedException {
+		Session session = createSession(logger);
 		closeSession(session, null);
 	}
 

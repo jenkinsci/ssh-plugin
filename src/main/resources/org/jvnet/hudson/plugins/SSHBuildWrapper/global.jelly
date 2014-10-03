@@ -30,6 +30,13 @@
                    checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/keyfileCheck?keyfile='+escape(this.value)"/>
           </f:entry>
 
+          <j:invokeStatic className="org.jvnet.hudson.plugins.CredentialsUtil" method="isAvailable" var="credentialsAvailable"/>
+          <j:if test="${credentialsAvailable}">
+            <f:entry title="${%Credentials}">
+              <c:select xmlns:c="/lib/credentials" field="credentialId" value="${site.credentialId}"/>
+            </f:entry>
+          </j:if>
+
           <f:entry title="${%Pty}" help="/plugin/ssh/help-pty.html">
             <f:checkbox class="setting-input" name="ssh.pty" checked="${site.pty}"/>
           </f:entry>

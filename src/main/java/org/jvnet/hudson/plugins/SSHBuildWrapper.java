@@ -1,20 +1,25 @@
 package org.jvnet.hudson.plugins;
 
 import com.jcraft.jsch.JSchException;
+
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
+import hudson.model.ItemGroup;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.CopyOnWriteList;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -23,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -171,8 +177,42 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) {
 			sites.replaceBy(req.bindParametersToList(SSHSite.class, "ssh."));
+
+			// ugly workaround for not having 'name' attribute in credentials:select jelly taglib
+			// the request contains '_.credentialId' instead of 'ssh.credentialId' so bindParametersToList
+			// does not bind credentialId property
+			final Object formSite = formData.get("site");
+
+			if (formSite instanceof JSONObject && sites.size() >= 1) {
+				final SSHSite site = sites.get(0);
+				final JSONObject formSiteObject = (JSONObject)formSite;
+
+				site.setCredentialId(formSiteObject.getString("credentialId"));
+			} else if (formSite instanceof JSONArray) {
+				int idx = 0;
+				final JSONArray formSiteArray = (JSONArray) formSite;
+				for (@SuppressWarnings("unchecked") Iterator<JSONObject> i = formSiteArray.iterator(); i.hasNext();) {
+					final JSONObject siteJSON = i.next();
+
+					final String credentialsId = siteJSON.getString("credentialId");
+
+					final SSHSite site = sites.get(idx);
+					site.setCredentialId(credentialsId);
+
+					idx++;
+
+					if (idx >= sites.size()) {
+						break;
+					}
+				}
+			}
+
 			save();
 			return true;
+		}
+
+		public ListBoxModel doFillCredentialIdItems(final @AncestorInPath ItemGroup<?> context) {
+			return CredentialsUtil.credentialsFor(context);
 		}
 
 		public FormValidation doKeyfileCheck(@QueryParameter String keyfile) {
@@ -193,7 +233,8 @@ public final class SSHBuildWrapper extends BuildWrapper {
 				return FormValidation.ok();
 			}
 			SSHSite site = new SSHSite(hostname, request.getParameter("port"), request.getParameter("user"), request.getParameter("pass"),
-					  request.getParameter("keyfile"), request.getParameter("serverAliveInterval"), request.getParameter("timeout"));
+					  request.getParameter("keyfile"), request.getParameter("serverAliveInterval"), request.getParameter("timeout"),
+					  request.getParameter("credentialsId"));
 			try {
 				try {
 					site.testConnection(System.out);
@@ -202,6 +243,9 @@ public final class SSHBuildWrapper extends BuildWrapper {
 					throw new IOException("Can't connect to server");
 				}
 			} catch (IOException e) {
+				LOGGER.log(Level.SEVERE, e.getMessage());
+				return FormValidation.error(e.getMessage());
+			} catch (InterruptedException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage());
 				return FormValidation.error(e.getMessage());
 			}
