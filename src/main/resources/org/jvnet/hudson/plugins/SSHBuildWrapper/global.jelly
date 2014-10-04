@@ -1,4 +1,5 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <j:invokeStatic className="org.jvnet.hudson.plugins.CredentialsUtil" method="isAvailable" var="credentialsAvailable"/>
   <!-- nothing to configure -->
   <f:section title="${%SSH remote hosts}">
     <f:entry title="${%SSH sites}"
@@ -12,10 +13,18 @@
             <f:textbox name="ssh.port" value="${site.port}"/>
           </f:entry>
           <f:entry title="${%User Name}" help="/plugin/ssh/help-login.html">
-            <f:textbox name="ssh.username" value="${site.username}"
-				checkMethod="post"
-				checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/loginCheck?hostname='+escape(Form.findMatchingInput(this,'ssh.hostname').value)+'&amp;port='+escape(Form.findMatchingInput(this,'ssh.port').value)+'&amp;user='+escape(this.value)+'&amp;pass='+escape(Form.findMatchingInput(this,'ssh.password').value)+'&amp;keyfile='+escape(Form.findMatchingInput(this,'ssh.keyfile').value)"
-			/>
+            <j:if test="${credentialsAvailable}">
+              <f:textbox name="ssh.username" value="${site.username}"
+				  checkMethod="post"
+				  checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/loginCheck?hostname='+escape(Form.findMatchingInput(this,'ssh.hostname').value)+'&amp;port='+escape(Form.findMatchingInput(this,'ssh.port').value)+'&amp;user='+escape(this.value)+'&amp;pass='+escape(Form.findMatchingInput(this,'ssh.password').value)+'&amp;keyfile='+escape(Form.findMatchingInput(this,'ssh.keyfile').value)+'&amp;credentialId='+escape(Form.findMatchingInput(this,'_.credentialId').value)"
+			  />
+            </j:if>
+            <j:if test="${!credentialsAvailable}">
+              <f:textbox name="ssh.username" value="${site.username}"
+                  checkMethod="post"
+                  checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/loginCheck?hostname='+escape(Form.findMatchingInput(this,'ssh.hostname').value)+'&amp;port='+escape(Form.findMatchingInput(this,'ssh.port').value)+'&amp;user='+escape(this.value)+'&amp;pass='+escape(Form.findMatchingInput(this,'ssh.password').value)+'&amp;keyfile='+escape(Form.findMatchingInput(this,'ssh.keyfile').value)"
+              />
+            </j:if>
           </f:entry>
           <f:entry title="${%Password/Passphrase}" help="/plugin/ssh/help-password.html">
             <input class="setting-input" name="ssh.password"
@@ -30,7 +39,6 @@
                    checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/keyfileCheck?keyfile='+escape(this.value)"/>
           </f:entry>
 
-          <j:invokeStatic className="org.jvnet.hudson.plugins.CredentialsUtil" method="isAvailable" var="credentialsAvailable"/>
           <j:if test="${credentialsAvailable}">
             <f:entry title="${%Credentials}">
               <c:select xmlns:c="/lib/credentials" field="credentialId" value="${site.credentialId}"/>

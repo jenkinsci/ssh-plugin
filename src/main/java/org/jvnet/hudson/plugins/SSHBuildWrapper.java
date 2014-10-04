@@ -234,7 +234,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			}
 			SSHSite site = new SSHSite(hostname, request.getParameter("port"), request.getParameter("user"), request.getParameter("pass"),
 					  request.getParameter("keyfile"), request.getParameter("serverAliveInterval"), request.getParameter("timeout"),
-					  request.getParameter("credentialsId"));
+					  request.getParameter("credentialId"));
 			try {
 				try {
 					site.testConnection(System.out);
