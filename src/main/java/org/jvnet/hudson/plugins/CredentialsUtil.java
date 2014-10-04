@@ -1,5 +1,6 @@
 package org.jvnet.hudson.plugins;
 
+import hudson.Plugin;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.security.ACL;
@@ -11,6 +12,8 @@ import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
+
+import jenkins.model.Jenkins;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHAuthenticator;
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserListBoxModel;
@@ -67,19 +70,11 @@ public class CredentialsUtil {
 	private final boolean available;
 
 	public CredentialsUtil() {
-		boolean tmpAvailable = false;
-		try {
-			final Class<?> authenticatorClass = Class
-					.forName("com.cloudbees.jenkins.plugins.sshcredentials.SSHAuthenticator");
-
-			final boolean firstStage = authenticatorClass != null;
-
-			final boolean secondStage = authenticatorClass.getClassLoader().loadClass("com.jcraft.jsch.JSchException") != null;
-
-			tmpAvailable = firstStage && secondStage;
-		} catch (final ClassNotFoundException ignored) {
+		final Plugin sshCredentials = Jenkins.getInstance().getPlugin("ssh-credentials");
+		if (sshCredentials == null) {
+			available = false;
+		} else {
+			available = sshCredentials.getWrapper().isEnabled();
 		}
-
-		available = tmpAvailable;
 	}
 }
