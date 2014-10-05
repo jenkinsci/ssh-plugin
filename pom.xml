@@ -24,7 +24,7 @@ Based on the cool scp plugin.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.jcraft</groupId>
+			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>jsch</artifactId>
 			<version>0.1.42</version>
 		</dependency>
