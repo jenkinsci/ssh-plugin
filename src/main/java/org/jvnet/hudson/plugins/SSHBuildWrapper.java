@@ -15,7 +15,6 @@ import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.CopyOnWriteList;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -177,35 +175,6 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) {
 			sites.replaceBy(req.bindParametersToList(SSHSite.class, "ssh."));
-
-			// ugly workaround for not having 'name' attribute in credentials:select jelly taglib
-			// the request contains '_.credentialId' instead of 'ssh.credentialId' so bindParametersToList
-			// does not bind credentialId property
-			final Object formSite = formData.get("site");
-
-			if (formSite instanceof JSONObject && sites.size() >= 1) {
-				final SSHSite site = sites.get(0);
-				final JSONObject formSiteObject = (JSONObject)formSite;
-
-				site.setCredentialId(formSiteObject.getString("credentialId"));
-			} else if (formSite instanceof JSONArray) {
-				int idx = 0;
-				final JSONArray formSiteArray = (JSONArray) formSite;
-				for (@SuppressWarnings("unchecked") Iterator<JSONObject> i = formSiteArray.iterator(); i.hasNext();) {
-					final JSONObject siteJSON = i.next();
-
-					final String credentialsId = siteJSON.getString("credentialId");
-
-					final SSHSite site = sites.get(idx);
-					site.setCredentialId(credentialsId);
-
-					idx++;
-
-					if (idx >= sites.size()) {
-						break;
-					}
-				}
-			}
 
 			save();
 			return true;

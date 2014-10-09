@@ -16,7 +16,7 @@
             <j:if test="${credentialsAvailable}">
               <f:textbox name="ssh.username" value="${site.username}"
 				  checkMethod="post"
-				  checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/loginCheck?hostname='+escape(Form.findMatchingInput(this,'ssh.hostname').value)+'&amp;port='+escape(Form.findMatchingInput(this,'ssh.port').value)+'&amp;user='+escape(this.value)+'&amp;pass='+escape(Form.findMatchingInput(this,'ssh.password').value)+'&amp;keyfile='+escape(Form.findMatchingInput(this,'ssh.keyfile').value)+'&amp;credentialId='+escape(Form.findMatchingInput(this,'_.credentialId').value)"
+				  checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/loginCheck?hostname='+escape(Form.findMatchingInput(this,'ssh.hostname').value)+'&amp;port='+escape(Form.findMatchingInput(this,'ssh.port').value)+'&amp;user='+escape(this.value)+'&amp;pass='+escape(Form.findMatchingInput(this,'ssh.password').value)+'&amp;keyfile='+escape(Form.findMatchingInput(this,'ssh.keyfile').value)+'&amp;credentialId='+escape(Form.findMatchingInput(this,'ssh.credentialId').value)"
 			  />
             </j:if>
             <j:if test="${!credentialsAvailable}">
@@ -41,7 +41,7 @@
 
           <j:if test="${credentialsAvailable}">
             <f:entry title="${%Credentials}">
-              <c:select xmlns:c="/lib/credentials" field="credentialId" value="${site.credentialId}"/>
+              <c:select xmlns:c="/lib/credentials" name="ssh.credentialId" field="credentialId" value="${site.credentialId}"/>
             </f:entry>
           </j:if>
 
