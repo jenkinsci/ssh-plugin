@@ -45,7 +45,7 @@ public class SSHBuilder extends Builder {
 
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-		SSHSite site = getSite();
+		CredentialsSSHSite site = getSite();
 		
 		// Get the build variables and make sure we substitute the current SSH Server host name
 		site.setResolvedHostname(build.getEnvironment(listener).expand(site.getHostname()));
@@ -62,9 +62,9 @@ public class SSHBuilder extends Builder {
 		return true;
 	}
 
-	public SSHSite getSite() {
-		SSHSite[] sites = SSHBuildWrapper.DESCRIPTOR.getSites();
-		for (SSHSite site : sites) {
+	public CredentialsSSHSite getSite() {
+		CredentialsSSHSite[] sites = SSHBuildWrapper.DESCRIPTOR.getSites();
+		for (CredentialsSSHSite site : sites) {
 			if (site.getSitename().equals(siteName))
 				return site;
 		}
@@ -91,7 +91,7 @@ public class SSHBuilder extends Builder {
 
 		public ListBoxModel doFillSiteNameItems() {
 			ListBoxModel m = new ListBoxModel();
-			for (SSHSite site : SSHBuildWrapper.DESCRIPTOR.getSites()) {
+			for (CredentialsSSHSite site : SSHBuildWrapper.DESCRIPTOR.getSites()) {
 				m.add(site.getSitename());
 			}
 			return m;

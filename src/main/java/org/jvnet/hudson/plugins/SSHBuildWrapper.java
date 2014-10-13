@@ -1,20 +1,33 @@
 package org.jvnet.hudson.plugins;
 
-import com.jcraft.jsch.JSchException;
-
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.Util;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
+import hudson.XmlFile;
 import hudson.model.BuildListener;
 import hudson.model.ItemGroup;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.security.ACL;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import hudson.util.CopyOnWriteList;
 import hudson.util.FormValidation;
+import hudson.util.XStream2;
 import hudson.util.ListBoxModel;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
@@ -23,13 +36,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.cloudbees.jenkins.plugins.sshcredentials.SSHAuthenticator;
+import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserListBoxModel;
+import com.cloudbees.jenkins.plugins.sshcredentials.impl.JSchConnector;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import com.jcraft.jsch.JSchException;
 
 public final class SSHBuildWrapper extends BuildWrapper {
 
@@ -50,10 +62,12 @@ public final class SSHBuildWrapper extends BuildWrapper {
 	}
 
 	@Override
-	public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+	public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException,
+			InterruptedException {
 		Environment env = new Environment() {
 			@Override
-			public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
+			public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException,
+					InterruptedException {
 				if (!executePostBuildScript(build, listener)) {
 					return false;
 				}
@@ -67,9 +81,10 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		return null;
 	}
 
-	private boolean executePreBuildScript(AbstractBuild<?, ?> build, BuildListener listener) throws IOException, InterruptedException {
+	private boolean executePreBuildScript(AbstractBuild<?, ?> build, BuildListener listener) throws IOException,
+			InterruptedException {
 		PrintStream logger = listener.getLogger();
-		SSHSite site = getSite();
+		CredentialsSSHSite site = getSite();
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
@@ -81,9 +96,10 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		return true;
 	}
 
-	private boolean executePostBuildScript(AbstractBuild<?, ?> build, BuildListener listener) throws IOException, InterruptedException {
+	private boolean executePostBuildScript(AbstractBuild<?, ?> build, BuildListener listener) throws IOException,
+			InterruptedException {
 		PrintStream logger = listener.getLogger();
-		SSHSite site = getSite();
+		CredentialsSSHSite site = getSite();
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
@@ -111,10 +127,10 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		this.postScript = postScript;
 	}
 
-	public SSHSite getSite() {
-		SSHSite[] sites = DESCRIPTOR.getSites();
+	public CredentialsSSHSite getSite() {
+		CredentialsSSHSite[] sites = DESCRIPTOR.getSites();
 
-		for (SSHSite site : sites) {
+		for (CredentialsSSHSite site : sites) {
 			if (site.getSitename().equals(siteName))
 				return site;
 		}
@@ -139,7 +155,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			super(clazz);
 		}
 
-		private final CopyOnWriteList<SSHSite> sites = new CopyOnWriteList<SSHSite>();
+		private final CopyOnWriteList<CredentialsSSHSite> sites = new CopyOnWriteList<CredentialsSSHSite>();
 
 		@Override
 		public String getDisplayName() {
@@ -148,7 +164,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 		public ListBoxModel doFillSiteNameItems() {
 			ListBoxModel m = new ListBoxModel();
-			for (SSHSite site : SSHBuildWrapper.DESCRIPTOR.getSites()) {
+			for (CredentialsSSHSite site : SSHBuildWrapper.DESCRIPTOR.getSites()) {
 				m.add(site.getSitename());
 			}
 			return m;
@@ -168,20 +184,24 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			return req.bindJSON(clazz, formData);
 		}
 
-		public SSHSite[] getSites() {
-			return sites.toArray(new SSHSite[0]);
+		public CredentialsSSHSite[] getSites() {
+			return sites.toArray(new CredentialsSSHSite[0]);
 		}
 
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) {
-			sites.replaceBy(req.bindParametersToList(SSHSite.class, "ssh."));
+			sites.replaceBy(req.bindParametersToList(CredentialsSSHSite.class, "ssh."));
 
 			save();
 			return true;
 		}
 
 		public ListBoxModel doFillCredentialIdItems(final @AncestorInPath ItemGroup<?> context) {
-			return CredentialsUtil.credentialsFor(context);
+			final List<StandardUsernameCredentials> credentials = CredentialsProvider.lookupCredentials(
+					StandardUsernameCredentials.class, context, ACL.SYSTEM, CredentialsSSHSite.NO_REQUIREMENTS);
+
+			return new SSHUserListBoxModel().withEmptySelection().withMatching(
+					SSHAuthenticator.matcher(JSchConnector.class), credentials);
 		}
 
 		public FormValidation doKeyfileCheck(@QueryParameter String keyfile) {
@@ -197,13 +217,16 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		}
 
 		public FormValidation doLoginCheck(StaplerRequest request) {
-			String hostname = Util.fixEmpty(request.getParameter("hostname"));
-			if (hostname == null) {// hosts is not entered yet
+			final String hostname = Util.fixEmpty(request.getParameter("hostname"));
+			final String port = Util.fixEmpty(request.getParameter("port"));
+			final String credentialId = Util.fixEmpty(request.getParameter("port"));
+
+			if (hostname == null || port == null || credentialId == null) {// all fields not entered yet
 				return FormValidation.ok();
 			}
-			SSHSite site = new SSHSite(hostname, request.getParameter("port"), request.getParameter("user"), request.getParameter("pass"),
-					  request.getParameter("keyfile"), request.getParameter("serverAliveInterval"), request.getParameter("timeout"),
-					  request.getParameter("credentialId"));
+
+			final CredentialsSSHSite site = new CredentialsSSHSite(hostname, port, credentialId,
+					request.getParameter("serverAliveInterval"), request.getParameter("timeout"));
 			try {
 				try {
 					site.testConnection(System.out);
@@ -226,6 +249,41 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			return true;
 		}
 
+		public synchronized void load() {
+			final XStream2 xstream = new XStream2();
+			xstream.addCompatibilityAlias("org.jvnet.hudson.plugins.SSHSite", CredentialsSSHSite.LegacySSHSite.class);
+
+			final XmlFile file = new XmlFile(xstream, new File(Jenkins.getInstance().getRootDir(), getId() + ".xml"));
+			if (!file.exists()) {
+				return;
+			}
+
+			try {
+				file.unmarshal(this);
+			} catch (IOException e) {
+				LOGGER.log(Level.WARNING, "Failed to load " + file, e);
+			}
+
+			boolean madeChanges = false;
+			final List<CredentialsSSHSite> migratedCredentials = new ArrayList<CredentialsSSHSite>(sites.size());
+			for (CredentialsSSHSite site : sites) {
+				try {
+					final CredentialsSSHSite migrated = CredentialsSSHSite.migrateToCredentials(site);
+					migratedCredentials.add(migrated);
+					
+					madeChanges = madeChanges || (migrated != site);
+				} catch (InterruptedException e) {
+					throw new IllegalStateException("Failed to migrate site: " + site, e);
+				} catch (IOException e) {
+					throw new IllegalStateException("Failed to migrate site: " + site, e);
+				}
+			}
+
+			if (madeChanges) {
+				sites.replaceBy(migratedCredentials);
+				save();
+			}
+		}
 	}
 
 	public String getSiteName() {
