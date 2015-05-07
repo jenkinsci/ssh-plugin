@@ -54,10 +54,20 @@ public class SSHBuilder extends Builder {
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.replace(command, vars);
-		
+
+		//I think I can just change the way command and runtime_cmd are handled to tokenize command and execute a series of commands within the same session
+		//this may not be necessary if I can pass the boolean directly to SSHSite
 		if (site != null && runtime_cmd != null && runtime_cmd.trim().length() > 0) {
-			listener.getLogger().printf("executing script:%n%s%n", runtime_cmd);
-			return site.executeCommand(listener.getLogger(), runtime_cmd) == 0;
+			boolean execEachLine = false;
+
+			if (execEachLine) {
+				listener.getLogger().printf("executing script:%n%s%n one command at a time", runtime_cmd);
+				return site.executeCommand(listener.getLogger(), runtime_cmd, execEachLine) == 0;
+			}
+			else {
+				listener.getLogger().printf("executing script:%n%s%n", runtime_cmd);
+				return site.executeCommand(listener.getLogger(), runtime_cmd) == 0;
+			}
 		}
 		return true;
 	}
