@@ -158,6 +158,7 @@ public class SSHSite {
 		return session;
 	}
 
+	//preserved on the off chance it's used by another plugin
 	public int executeCommand(PrintStream logger, String command) throws InterruptedException {
 		return executeCommand(logger, command, false);
 	}

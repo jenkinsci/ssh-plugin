@@ -20,11 +20,13 @@ public class SSHBuilder extends Builder {
 
 	private String siteName;
 	private String command;
+	private boolean execEachLine;
 
 	@DataBoundConstructor
 	public SSHBuilder(String siteName, String command) {
 		this.siteName = siteName;
 		this.command = command;
+		this.execEachLine = execEachLine;
 	}
 
 	public String getSiteName() {
@@ -35,12 +37,20 @@ public class SSHBuilder extends Builder {
 		return command;
 	}
 
+	public boolean getExecEachLine() {
+		return execEachLine;
+	}
+
 	public void setSiteName(String siteName) {
 		this.siteName = siteName;
 	}
 
 	public void setCommand(String command) {
 		this.command = command;
+	}
+
+	public void setExecEachLine(boolean execEachLine) {
+		this.execEachLine = execEachLine;
 	}
 
 	@Override
@@ -55,19 +65,14 @@ public class SSHBuilder extends Builder {
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.replace(command, vars);
 
-		//I think I can just change the way command and runtime_cmd are handled to tokenize command and execute a series of commands within the same session
-		//this may not be necessary if I can pass the boolean directly to SSHSite
 		if (site != null && runtime_cmd != null && runtime_cmd.trim().length() > 0) {
-			boolean execEachLine = false;
-
 			if (execEachLine) {
 				listener.getLogger().printf("executing script:%n%s%n one command at a time", runtime_cmd);
-				return site.executeCommand(listener.getLogger(), runtime_cmd, execEachLine) == 0;
 			}
 			else {
 				listener.getLogger().printf("executing script:%n%s%n", runtime_cmd);
-				return site.executeCommand(listener.getLogger(), runtime_cmd) == 0;
 			}
+			return site.executeCommand(listener.getLogger(), runtime_cmd, execEachLine) == 0;
 		}
 		return true;
 	}
