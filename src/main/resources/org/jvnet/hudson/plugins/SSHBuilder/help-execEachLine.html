@@ -1,0 +1,9 @@
+<div>
+<p>Execute each line in the script individually.</p>
+
+<p>By default, all of the commands are concatenated into a single "command" issued over a single SSH exec channel. Selecting this option causes each line to be executed over it's own SSH exec channel, each of which is part of the same session.</p>
+
+<p>This is useful in certain cases where the commands cannot be concatenated into a single script executed at one time, for example, when issuing commands using the <a href="http://sourceforge.net/p/forge/documentation/Shell%20Service/#access">sourceforge.net</a> shell.</p>
+
+<p>If unsure, leave this box unchecked.</p>
+</div>

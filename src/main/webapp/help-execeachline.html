@@ -1,5 +1,0 @@
-<div>
-Execute each line in the script individually.
-
-This has to do with the way the commands are executed over SSH. By default, all of the commands are concatenated into a single "command" issued over an SSH exec channel. This option causes each line to be executed over it's own SSH exec channel. Each execution is part of the same session when using this option. This is useful in certain cases where the commands cannot be concatenated into a single script executed at one time. For example, when issueing commands using the sourceforge.net shell.
-</div>

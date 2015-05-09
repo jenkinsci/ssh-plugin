@@ -23,7 +23,7 @@ public class SSHBuilder extends Builder {
 	private boolean execEachLine;
 
 	@DataBoundConstructor
-	public SSHBuilder(String siteName, String command) {
+	public SSHBuilder(String siteName, String command, boolean execEachLine) {
 		this.siteName = siteName;
 		this.command = command;
 		this.execEachLine = execEachLine;
@@ -67,7 +67,7 @@ public class SSHBuilder extends Builder {
 
 		if (site != null && runtime_cmd != null && runtime_cmd.trim().length() > 0) {
 			if (execEachLine) {
-				listener.getLogger().printf("executing script:%n%s%n one command at a time", runtime_cmd);
+				listener.getLogger().printf("executing commands:%n%s%n", runtime_cmd);
 			}
 			else {
 				listener.getLogger().printf("executing script:%n%s%n", runtime_cmd);

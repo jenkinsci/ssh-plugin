@@ -158,7 +158,7 @@ public class SSHSite {
 		return session;
 	}
 
-	//preserved on the off chance it's used by another plugin
+	//preserved on the off chance this is used by another plugin
 	public int executeCommand(PrintStream logger, String command) throws InterruptedException {
 		return executeCommand(logger, command, false);
 	}
@@ -201,7 +201,7 @@ public class SSHSite {
 	}
 
 	private int execCommand(Session session, PrintStream logger, String command) throws InterruptedException, IOException, JSchException {
-		logger.println("	Executing: " + command);
+//		logger.println("	Executing: " + command);
 		ChannelExec channel = null;
 		int status = -1;
 		try {
@@ -219,7 +219,7 @@ public class SSHSite {
 				}
 				if (channel.isClosed()) {
 					status = channel.getExitStatus();
-					logger.println("[SSH] " + "exit-status: " + status);
+//					logger.println("[SSH] " + "exit-status: " + status);
 					break;
 				}
 				logger.flush();
