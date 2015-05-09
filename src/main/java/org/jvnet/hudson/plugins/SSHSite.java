@@ -185,6 +185,8 @@ public class SSHSite {
 			else {
 				status = execCommand(session, logger, command);
 			}
+			logger.printf("%n[SSH] completed");
+			logger.printf("%n[SSH] exit-status: " + status + "%n%n");
 		} catch (JSchException e) {
 			logger.println("[SSH] Exception:" + e.getMessage());
 			e.printStackTrace(logger);
@@ -219,7 +221,6 @@ public class SSHSite {
 				}
 				if (channel.isClosed()) {
 					status = channel.getExitStatus();
-//					logger.println("[SSH] " + "exit-status: " + status);
 					break;
 				}
 				logger.flush();

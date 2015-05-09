@@ -67,11 +67,12 @@ public class SSHBuilder extends Builder {
 
 		if (site != null && runtime_cmd != null && runtime_cmd.trim().length() > 0) {
 			if (execEachLine) {
-				listener.getLogger().printf("executing commands:%n%s%n", runtime_cmd);
+				listener.getLogger().printf("[SSH] commands:%n%s%n", runtime_cmd);
 			}
 			else {
-				listener.getLogger().printf("executing script:%n%s%n", runtime_cmd);
+				listener.getLogger().printf("[SSH] script:%n%s%n", runtime_cmd);
 			}
+			listener.getLogger().printf("%n[SSH] executing...%n", runtime_cmd);
 			return site.executeCommand(listener.getLogger(), runtime_cmd, execEachLine) == 0;
 		}
 		return true;
