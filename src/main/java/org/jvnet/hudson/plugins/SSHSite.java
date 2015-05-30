@@ -158,7 +158,7 @@ public class SSHSite {
 		return session;
 	}
 
-	//preserved on the off chance this is used by another plugin
+	@Deprecated
 	public int executeCommand(PrintStream logger, String command) throws InterruptedException {
 		return executeCommand(logger, command, false);
 	}

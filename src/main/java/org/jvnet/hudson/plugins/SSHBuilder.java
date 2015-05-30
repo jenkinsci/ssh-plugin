@@ -22,6 +22,12 @@ public class SSHBuilder extends Builder {
 	private String command;
 	private boolean execEachLine;
 
+	@Deprecated
+	public SSHBuilder(String siteName, String command) {
+		this.siteName = siteName;
+		this.command = command;
+	}
+
 	@DataBoundConstructor
 	public SSHBuilder(String siteName, String command, boolean execEachLine) {
 		this.siteName = siteName;
