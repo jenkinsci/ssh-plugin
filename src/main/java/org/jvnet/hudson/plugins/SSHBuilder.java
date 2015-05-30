@@ -20,11 +20,19 @@ public class SSHBuilder extends Builder {
 
 	private String siteName;
 	private String command;
+	private boolean execEachLine;
 
-	@DataBoundConstructor
+	@Deprecated
 	public SSHBuilder(String siteName, String command) {
 		this.siteName = siteName;
 		this.command = command;
+	}
+
+	@DataBoundConstructor
+	public SSHBuilder(String siteName, String command, boolean execEachLine) {
+		this.siteName = siteName;
+		this.command = command;
+		this.execEachLine = execEachLine;
 	}
 
 	public String getSiteName() {
@@ -35,12 +43,20 @@ public class SSHBuilder extends Builder {
 		return command;
 	}
 
+	public boolean getExecEachLine() {
+		return execEachLine;
+	}
+
 	public void setSiteName(String siteName) {
 		this.siteName = siteName;
 	}
 
 	public void setCommand(String command) {
 		this.command = command;
+	}
+
+	public void setExecEachLine(boolean execEachLine) {
+		this.execEachLine = execEachLine;
 	}
 
 	@Override
@@ -54,10 +70,16 @@ public class SSHBuilder extends Builder {
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.replace(command, vars);
-		
+
 		if (site != null && runtime_cmd != null && runtime_cmd.trim().length() > 0) {
-			listener.getLogger().printf("executing script:%n%s%n", runtime_cmd);
-			return site.executeCommand(listener.getLogger(), runtime_cmd) == 0;
+			if (execEachLine) {
+				listener.getLogger().printf("[SSH] commands:%n%s%n", runtime_cmd);
+			}
+			else {
+				listener.getLogger().printf("[SSH] script:%n%s%n", runtime_cmd);
+			}
+			listener.getLogger().printf("%n[SSH] executing...%n", runtime_cmd);
+			return site.executeCommand(listener.getLogger(), runtime_cmd, execEachLine) == 0;
 		}
 		return true;
 	}

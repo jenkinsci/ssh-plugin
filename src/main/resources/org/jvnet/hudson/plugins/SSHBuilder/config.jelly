@@ -8,4 +8,8 @@
         <f:textarea />
     </f:entry>
 
+	<f:entry title="${%Execute each line}" field="execEachLine">
+		<f:checkbox />
+	</f:entry>
+
 </j:jelly>

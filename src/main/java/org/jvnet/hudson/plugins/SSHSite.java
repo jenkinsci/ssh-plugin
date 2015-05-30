@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.logging.Logger;
+import java.util.StringTokenizer;
 
 public class SSHSite {
 	String hostname;
@@ -157,15 +158,57 @@ public class SSHSite {
 		return session;
 	}
 
+	@Deprecated
 	public int executeCommand(PrintStream logger, String command) throws InterruptedException {
+		return executeCommand(logger, command, false);
+	}
+
+	public int executeCommand(PrintStream logger, String command, boolean execEachLine) throws InterruptedException {
 		Session session = null;
-		ChannelExec channel = null;
 		int status = -1;
 		try {
 			session = createSession();
+			if (execEachLine) {
+				StringTokenizer commands = new StringTokenizer(command,"\n\r\f");
+				while (commands.hasMoreTokens()) {
+					int i = execCommand(session, logger, commands.nextToken().trim());
+					if (i != 0) {
+						status = i;
+						break;
+					}
+					//if there are no more commands to execute return the status of the last command
+					if (!commands.hasMoreTokens()) {
+						status = i;
+					}
+				}
+			}
+			else {
+				status = execCommand(session, logger, command);
+			}
+			logger.printf("%n[SSH] completed");
+			logger.printf("%n[SSH] exit-status: " + status + "%n%n");
+		} catch (JSchException e) {
+			logger.println("[SSH] Exception:" + e.getMessage());
+			e.printStackTrace(logger);
+		} catch (IOException e) {
+			logger.println("[SSH] Exception:" + e.getMessage());
+			e.printStackTrace(logger);
+		} finally {
+			if (session != null && session.isConnected()) {
+				session.disconnect();
+			}
+		}
+
+		return status;
+	}
+
+	private int execCommand(Session session, PrintStream logger, String command) throws InterruptedException, IOException, JSchException {
+//		logger.println("	Executing: " + command);
+		ChannelExec channel = null;
+		int status = -1;
+		try {
 			channel = createChannel(logger, session);
 			channel.setCommand(command);
-
 			InputStream in = channel.getInputStream();
 			channel.connect();
 			byte[] tmp = new byte[1024];
@@ -178,26 +221,19 @@ public class SSHSite {
 				}
 				if (channel.isClosed()) {
 					status = channel.getExitStatus();
-					logger.println("[SSH] " + "exit-status: " + status);
 					break;
 				}
-                logger.flush();
-                Thread.sleep(1000);
+				logger.flush();
+				Thread.sleep(1000);
 			}
-			closeSession(session, channel);
 		} catch (JSchException e) {
-			logger.println("[SSH] Exception:" + e.getMessage());
-			e.printStackTrace(logger);
+			throw e;
+		} finally {
 			if (channel != null && channel.isConnected()) {
 				channel.disconnect();
 			}
-			if (session != null && session.isConnected()) {
-				session.disconnect();
-			}
-		} catch (IOException e) {
-			logger.println("[SSH] Exception:" + e.getMessage());
-			e.printStackTrace(logger);
 		}
+
 		return status;
 	}
 
