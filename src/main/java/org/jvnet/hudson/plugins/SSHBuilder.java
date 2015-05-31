@@ -62,16 +62,19 @@ public class SSHBuilder extends Builder {
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 		SSHSite site = getSite();
-		
+		if (site == null) {
+			listener.getLogger().printf("[SSH] No SSH site specified%n");
+			return false;
+		}
 		// Get the build variables and make sure we substitute the current SSH Server host name
 		site.setResolvedHostname(build.getEnvironment(listener).expand(site.getHostname()));
-		
+
 		Map<String, String> vars = new HashMap<String, String>(); 
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.replace(command, vars);
 
-		if (site != null && runtime_cmd != null && runtime_cmd.trim().length() > 0) {
+		if (runtime_cmd != null && runtime_cmd.trim().length() > 0) {
 			if (execEachLine) {
 				listener.getLogger().printf("[SSH] commands:%n%s%n", runtime_cmd);
 			}

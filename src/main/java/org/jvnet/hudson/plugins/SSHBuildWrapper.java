@@ -66,6 +66,10 @@ public final class SSHBuildWrapper extends BuildWrapper {
 	private boolean executePreBuildScript(AbstractBuild<?, ?> build, BuildListener listener) throws IOException, InterruptedException {
 		PrintStream logger = listener.getLogger();
 		SSHSite site = getSite();
+		if (site == null) {
+			listener.getLogger().printf("[SSH] No SSH site specified%n");
+			return false;
+		}
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
@@ -80,6 +84,10 @@ public final class SSHBuildWrapper extends BuildWrapper {
 	private boolean executePostBuildScript(AbstractBuild<?, ?> build, BuildListener listener) throws IOException, InterruptedException {
 		PrintStream logger = listener.getLogger();
 		SSHSite site = getSite();
+		if (site == null) {
+			listener.getLogger().printf("[SSH] No SSH site specified%n");
+			return false;
+		}
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
@@ -109,7 +117,6 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 	public SSHSite getSite() {
 		SSHSite[] sites = DESCRIPTOR.getSites();
-
 		for (SSHSite site : sites) {
 			if (site.getSitename().equals(siteName))
 				return site;
