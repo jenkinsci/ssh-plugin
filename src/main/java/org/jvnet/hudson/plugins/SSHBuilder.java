@@ -7,9 +7,11 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
@@ -120,6 +122,13 @@ public class SSHBuilder extends Builder {
 				m.add(site.getSitename());
 			}
 			return m;
+		}
+
+		public FormValidation doCheckSiteName(@QueryParameter final String value) {
+			if ((value == null) || (value.trim().isEmpty())) {
+				return FormValidation.error("SSH Site not specified");
+			}
+			return FormValidation.ok();
 		}
 	}
 }

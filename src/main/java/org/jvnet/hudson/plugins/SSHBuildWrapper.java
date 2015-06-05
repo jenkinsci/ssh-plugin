@@ -182,6 +182,13 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			return true;
 		}
 
+		public FormValidation doCheckSiteName(@QueryParameter final String value) {
+			if ((value == null) || (value.trim().isEmpty())) {
+				return FormValidation.error("SSH Site not specified");
+			}
+			return FormValidation.ok();
+		}
+
 		public FormValidation doKeyfileCheck(@QueryParameter String keyfile) {
 			keyfile = Util.fixEmpty(keyfile);
 			if (keyfile != null) {
