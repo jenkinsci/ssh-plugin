@@ -7,9 +7,11 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
@@ -62,16 +64,19 @@ public class SSHBuilder extends Builder {
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 		SSHSite site = getSite();
-		
+		if (site == null) {
+			listener.getLogger().printf("[SSH] No SSH site specified%n");
+			return false;
+		}
 		// Get the build variables and make sure we substitute the current SSH Server host name
 		site.setResolvedHostname(build.getEnvironment(listener).expand(site.getHostname()));
-		
+
 		Map<String, String> vars = new HashMap<String, String>(); 
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.replace(command, vars);
 
-		if (site != null && runtime_cmd != null && runtime_cmd.trim().length() > 0) {
+		if (runtime_cmd != null && runtime_cmd.trim().length() > 0) {
 			if (execEachLine) {
 				listener.getLogger().printf("[SSH] commands:%n%s%n", runtime_cmd);
 			}
@@ -117,6 +122,13 @@ public class SSHBuilder extends Builder {
 				m.add(site.getSitename());
 			}
 			return m;
+		}
+
+		public FormValidation doCheckSiteName(@QueryParameter final String value) {
+			if ((value == null) || (value.trim().isEmpty())) {
+				return FormValidation.error("SSH Site not specified");
+			}
+			return FormValidation.ok();
 		}
 	}
 }
