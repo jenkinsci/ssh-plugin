@@ -74,7 +74,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.replace(preScript, vars);
-		log(logger, "executing pre build script:\n" + runtime_cmd);
+		log(logger, "executing pre build script:\n" + VariableReplacerUtil.scrub(runtime_cmd, vars, build.getSensitiveBuildVariables()));
 		if (runtime_cmd != null && !runtime_cmd.trim().equals("")) {
 			return site.executeCommand(logger, runtime_cmd) == 0;
 		}
@@ -92,7 +92,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.replace(postScript, vars);
-		log(logger, "executing post build script:\n" + runtime_cmd);
+		log(logger, "executing post build script:\n" + VariableReplacerUtil.scrub(runtime_cmd, vars, build.getSensitiveBuildVariables()));
 		if (runtime_cmd != null && !runtime_cmd.trim().equals("")) {
 			return site.executeCommand(logger, runtime_cmd) == 0;
 		}
