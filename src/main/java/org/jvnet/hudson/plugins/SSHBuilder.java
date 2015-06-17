@@ -75,15 +75,16 @@ public class SSHBuilder extends Builder {
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.replace(command, vars);
+		String scrubbed_cmd = VariableReplacerUtil.scrub(runtime_cmd, vars, build.getSensitiveBuildVariables());
 
 		if (runtime_cmd != null && runtime_cmd.trim().length() > 0) {
 			if (execEachLine) {
-				listener.getLogger().printf("[SSH] commands:%n%s%n", runtime_cmd);
+				listener.getLogger().printf("[SSH] commands:%n%s%n", scrubbed_cmd);
 			}
 			else {
-				listener.getLogger().printf("[SSH] script:%n%s%n", runtime_cmd);
+				listener.getLogger().printf("[SSH] script:%n%s%n", scrubbed_cmd);
 			}
-			listener.getLogger().printf("%n[SSH] executing...%n", runtime_cmd);
+			listener.getLogger().printf("%n[SSH] executing...%n");
 			return site.executeCommand(listener.getLogger(), runtime_cmd, execEachLine) == 0;
 		}
 		return true;
