@@ -5,6 +5,7 @@ import hudson.security.ACL;
 import hudson.util.StreamTaskListener;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -187,7 +188,7 @@ public class CredentialsSSHSite {
 			if (execEachLine) {
 				StringTokenizer commands = new StringTokenizer(command,"\n\r\f");
 				while (commands.hasMoreTokens()) {
-					int i = executeCommand(logger, commands.nextToken().trim());
+					int i = doExecCommand(session, logger, commands.nextToken().trim());
 					if (i != 0) {
 						status = i;
 						break;
@@ -199,7 +200,7 @@ public class CredentialsSSHSite {
 				}
 			}
 			else {
-				status = executeCommand(logger, command);
+				status = doExecCommand(session, logger, command);
 			}
 			logger.printf("%n[SSH] completed");
 			logger.printf("%n[SSH] exit-status: " + status + "%n%n");
@@ -215,6 +216,39 @@ public class CredentialsSSHSite {
 			}
 		}
 
+		return status;
+	}
+
+	private int doExecCommand(Session session, PrintStream logger, String command) throws InterruptedException, IOException, JSchException {
+		ChannelExec channel = null;
+		int status = -1;
+		try {
+			channel = createChannel(logger, session);
+			channel.setCommand(command);
+			InputStream in = channel.getInputStream();
+			channel.connect();
+			byte[] tmp = new byte[1024];
+			while (true) {
+				while (in.available() > 0) {
+					int i = in.read(tmp, 0, 1024);
+					if (i < 0)
+						break;
+					logger.write(tmp, 0, i);
+				}
+				if (channel.isClosed()) {
+					status = channel.getExitStatus();
+					break;
+				}
+				logger.flush();
+				Thread.sleep(1000);
+			}
+		} catch (JSchException e) {
+			throw e;
+		} finally {
+			if (channel != null && channel.isConnected()) {
+				channel.disconnect();
+			}
+		}
 		return status;
 	}
 
