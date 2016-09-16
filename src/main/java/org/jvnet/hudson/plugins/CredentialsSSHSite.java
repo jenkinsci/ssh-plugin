@@ -16,10 +16,10 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.jenkinsci.plugins.jsch.JSchConnector;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHAuthenticator;
-import com.cloudbees.jenkins.plugins.sshcredentials.impl.JSchConnector;
 import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
 import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey.FileOnMasterPrivateKeySource;
 import com.cloudbees.plugins.credentials.Credentials;
