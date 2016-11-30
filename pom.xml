@@ -20,6 +20,10 @@ Based on the cool scp plugin.</description>
 			<id>edmund_wagner</id>
 			<name>Edmund Wagner</name>
 		</developer>
+		<developer>
+			<id>ljader</id>
+			<name>Lukasz Jader</name>
+		</developer>
 	</developers>
 
 	<dependencies>
