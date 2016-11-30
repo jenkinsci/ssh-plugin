@@ -216,13 +216,16 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			return FormValidation.ok();
 		}
 
+		/**
+		 * Validates ssh connection - currently this is executed on master node
+		 */
 		public FormValidation doLoginCheck(StaplerRequest request) {
 			final String hostname = Util.fixEmpty(request.getParameter("hostname"));
 			final String port = Util.fixEmpty(request.getParameter("port"));
-			final String credentialId = Util.fixEmpty(request.getParameter("port"));
+			final String credentialId = Util.fixEmpty(request.getParameter("credentialId"));
 
 			if (hostname == null || port == null || credentialId == null) {// all fields not entered yet
-				return FormValidation.ok();
+				return FormValidation.warning("Please fill host, port and credentials.");
 			}
 
 			final CredentialsSSHSite site = new CredentialsSSHSite(hostname, port, credentialId,
@@ -241,7 +244,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 				LOGGER.log(Level.SEVERE, e.getMessage());
 				return FormValidation.error(e.getMessage());
 			}
-			return FormValidation.ok();
+			return FormValidation.ok("Successfull connection");
 		}
 
 		@Override
