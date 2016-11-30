@@ -190,7 +190,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) {
-			sites.replaceBy(req.bindParametersToList(CredentialsSSHSite.class, "ssh."));
+			sites.replaceBy(req.bindJSONToList(CredentialsSSHSite.class, formData.get("site")));
 
 			save();
 			return true;
