@@ -204,18 +204,6 @@ public final class SSHBuildWrapper extends BuildWrapper {
 					SSHAuthenticator.matcher(JSchConnector.class), credentials);
 		}
 
-		public FormValidation doKeyfileCheck(@QueryParameter String keyfile) {
-			keyfile = Util.fixEmpty(keyfile);
-			if (keyfile != null) {
-				File f = new File(keyfile);
-				if (!f.isFile()) {
-					return FormValidation.error("keyfile does not exist");
-				}
-			}
-
-			return FormValidation.ok();
-		}
-
 		/**
 		 * Validates ssh connection - currently this is executed on master node
 		 */
