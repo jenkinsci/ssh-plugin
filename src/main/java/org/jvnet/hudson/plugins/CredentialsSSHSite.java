@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import org.jenkinsci.plugins.jsch.JSchConnector;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHAuthenticator;
 import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
@@ -276,6 +277,7 @@ public class CredentialsSSHSite {
 		return "" + serverAliveInterval;
 	}
 
+	/** Returns &quot;identifier&quot; for ssh site: <strong>username@hostname:port</strong> */
 	public String getSitename() {
 		return username + "@" + hostname + ":" + port;
 	}
@@ -307,6 +309,7 @@ public class CredentialsSSHSite {
 		}
 	}
 
+	@DataBoundSetter
 	public void setPty(final Boolean pty) {
 		this.pty = pty;
 	}
