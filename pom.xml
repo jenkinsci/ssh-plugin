@@ -47,6 +47,14 @@ Based on the cool scp plugin.</description>
 					<goals>deploy</goals>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.jenkins-ci.tools</groupId>
+				<artifactId>maven-hpi-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<compatibleSinceVersion>2.5</compatibleSinceVersion>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
