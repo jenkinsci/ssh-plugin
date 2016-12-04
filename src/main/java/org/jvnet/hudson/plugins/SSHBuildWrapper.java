@@ -190,7 +190,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) {
-			sites.replaceBy(req.bindJSONToList(CredentialsSSHSite.class, formData.get("site")));
+			sites.replaceBy(req.bindJSONToList(CredentialsSSHSite.class, formData.get("sites")));
 
 			save();
 			return true;
@@ -207,17 +207,21 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		/**
 		 * Validates ssh connection - currently this is executed on master node
 		 */
-		public FormValidation doLoginCheck(StaplerRequest request) {
-			final String hostname = Util.fixEmpty(request.getParameter("hostname"));
-			final String port = Util.fixEmpty(request.getParameter("port"));
-			final String credentialId = Util.fixEmpty(request.getParameter("credentialId"));
+		public FormValidation doLoginCheck(@QueryParameter("hostname") String hostname,
+				@QueryParameter("port") String port,
+				@QueryParameter("credentialId") String credentialId,
+				@QueryParameter("serverAliveInterval") String serverAliveInterval,
+				@QueryParameter("timeout") String timeout) {
+			hostname = Util.fixEmpty(hostname);
+			port = Util.fixEmpty(port);
+			credentialId = Util.fixEmpty(credentialId);
 
 			if (hostname == null || port == null || credentialId == null) {// all fields not entered yet
 				return FormValidation.warning("Please fill host, port and credentials.");
 			}
 
 			final CredentialsSSHSite site = new CredentialsSSHSite(hostname, port, credentialId,
-					request.getParameter("serverAliveInterval"), request.getParameter("timeout"));
+					serverAliveInterval, timeout);
 			try {
 				try {
 					site.testConnection(System.out);

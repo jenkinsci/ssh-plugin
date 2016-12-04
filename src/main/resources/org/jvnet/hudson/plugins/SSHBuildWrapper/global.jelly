@@ -1,35 +1,34 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
   <!-- nothing to configure -->
   <f:section title="${%SSH remote hosts}">
     <f:entry title="${%SSH sites}"
       description="${%SSH sites that projects will want to connect}">
-      <f:repeatable var="site" items="${descriptor.sites}">
+      <f:repeatable var="site" name="sites" items="${descriptor.sites}">
         <table width="100%">
           <f:entry title="${%Hostname}" help="/plugin/ssh/help-hostname.html">
-            <f:textbox name="ssh.hostname" value="${site.hostname}" onchange="Form.findMatchingInput(this,'ssh.credentials').onchange()"/>
+            <f:textbox name="hostname" value="${site.hostname}"/>
           </f:entry>
           <f:entry title="${%Port}" help="/plugin/ssh/help-port.html">
-            <f:textbox name="ssh.port" value="${site.port}" onchange="Form.findMatchingInput(this,'ssh.credentials').onchange()"/>
+            <f:textbox name="port" value="${site.port}"/>
           </f:entry>
 
           <f:entry title="${%Credentials}">
-            <c:select xmlns:c="/lib/credentials" name="ssh.credentialId" field="credentialId" value="${site.credentialId}"
-                    checkMethod="post"
-                    checkUrl="'${rootURL}/descriptor/SSHBuildWrapper/loginCheck?hostname='+escape(Form.findMatchingInput(this,'ssh.hostname').value)+'&amp;port='+escape(Form.findMatchingInput(this,'ssh.port').value)+'&amp;credentialId='+escape(Form.findMatchingInput(this,'ssh.credentialId').value)"
-            />
+            <c:select name="credentialId" field="credentialId" value="${site.credentialId}"/>
           </f:entry>
 
           <f:entry title="${%Pty}" help="/plugin/ssh/help-pty.html">
-            <f:checkbox class="setting-input" name="ssh.pty" checked="${site.pty}"/>
+            <f:checkbox class="setting-input" name="pty" checked="${site.pty}"/>
           </f:entry>
 
 	       <f:entry title="${%serverAliveInterval}" help="/plugin/ssh/help-serverAliveInterval.html">
-		      <f:textbox name="ssh.serverAliveInterval" value="${site.serverAliveInterval}"/>
+		      <f:textbox name="serverAliveInterval" value="${site.serverAliveInterval}"/>
 	       </f:entry>
 
 	       <f:entry title="${%timeout}" help="/plugin/ssh/help-timeout.html">
-		      <f:textbox name="ssh.timeout" value="${site.timeout}"/>
+		      <f:textbox name="timeout" value="${site.timeout}"/>
 	       </f:entry>
+
+          <f:validateButton title="Check connection" progress="Checking..." method="loginCheck" with="hostname,port,credentialId,serverAliveInterval,timeout" />
 
           <f:entry title="">
             <div align="right">
