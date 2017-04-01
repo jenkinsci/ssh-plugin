@@ -146,13 +146,13 @@ public class CredentialsSSHSite {
 			String createdCredentialId = UUID.randomUUID().toString();
 
 			final StandardUsernameCredentials credentialsToCreate;
-			if (!Strings.isNullOrEmpty(legacy.password)) {
+			if (!Strings.isNullOrEmpty(legacy.keyfile)) {
+				credentialsToCreate = new BasicSSHUserPrivateKey(CredentialsScope.SYSTEM, createdCredentialId,
+						legacy.username, new FileOnMasterPrivateKeySource(legacy.keyfile), legacy.password,
+						"migrated from previous ssh-plugin version");
+			} else if (!Strings.isNullOrEmpty(legacy.password)) {
 				credentialsToCreate = new UsernamePasswordCredentialsImpl(CredentialsScope.SYSTEM, createdCredentialId,
 						"migrated from previous ssh-plugin version", legacy.username, legacy.password);
-			} else if (!Strings.isNullOrEmpty(legacy.keyfile)) {
-				credentialsToCreate = new BasicSSHUserPrivateKey(CredentialsScope.SYSTEM, createdCredentialId,
-						legacy.username, new FileOnMasterPrivateKeySource(legacy.keyfile), null,
-						"migrated from previous ssh-plugin version");
 			} else {
 				throw new InterruptedException(
 						"Did not find password nor keyfile while migrating from non-credentials SSH configuration!");
