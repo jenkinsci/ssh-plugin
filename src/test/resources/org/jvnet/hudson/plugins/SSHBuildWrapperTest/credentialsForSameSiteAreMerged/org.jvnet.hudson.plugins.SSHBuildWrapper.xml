@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<org.jvnet.hudson.plugins.SSHBuildWrapper_-DescriptorImpl plugin="ssh@2.4">
+  <sites>
+    <org.jvnet.hudson.plugins.SSHSite>
+      <hostname>hostname.pl</hostname>
+      <port>22</port>
+      <username>user</username>
+      <password>pass</password>
+      <keyfile>/var/jenkins_home/.ssh/devops-server.pem</keyfile>
+      <serverAliveInterval>3000</serverAliveInterval>
+      <pty>false</pty>
+    </org.jvnet.hudson.plugins.SSHSite>
+    <org.jvnet.hudson.plugins.SSHSite>
+      <hostname>hostname.pl</hostname>
+      <port>22</port>
+      <username>user</username>
+      <password>pass</password>
+      <keyfile></keyfile>
+      <serverAliveInterval>3000</serverAliveInterval>
+      <pty>false</pty>
+    </org.jvnet.hudson.plugins.SSHSite>
+  </sites>
+</org.jvnet.hudson.plugins.SSHBuildWrapper_-DescriptorImpl>

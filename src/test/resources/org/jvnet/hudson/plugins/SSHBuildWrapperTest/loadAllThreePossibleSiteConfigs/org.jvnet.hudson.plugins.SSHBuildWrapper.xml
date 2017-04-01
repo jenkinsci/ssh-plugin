@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<org.jvnet.hudson.plugins.SSHBuildWrapper_-DescriptorImpl plugin="ssh@2.4">
+	<sites>
+		<org.jvnet.hudson.plugins.SSHSite>
+			<hostname>worker1.example.com</hostname>
+			<port>22</port>
+			<username>root</username>
+			<password>dog8code</password>
+			<keyfile></keyfile>
+			<pty>false</pty>
+		</org.jvnet.hudson.plugins.SSHSite>
+		<org.jvnet.hudson.plugins.SSHSite>
+			<hostname>worker2.example.com</hostname>
+			<port>22</port>
+			<username>root</username>
+			<password></password>
+			<keyfile>.ssh/id_hudson_dsa</keyfile>
+			<pty>false</pty>
+		</org.jvnet.hudson.plugins.SSHSite>
+		<org.jvnet.hudson.plugins.SSHSite>
+			<hostname>worker3.example.com</hostname>
+			<port>22</port>
+			<username>root</username>
+			<password>pass</password>
+			<keyfile>.ssh/id_hudson_dsa</keyfile>
+			<pty>false</pty>
+		</org.jvnet.hudson.plugins.SSHSite>
+	</sites>
+</org.jvnet.hudson.plugins.SSHBuildWrapper_-DescriptorImpl>
