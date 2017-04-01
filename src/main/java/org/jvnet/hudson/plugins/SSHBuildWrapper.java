@@ -244,21 +244,20 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			return true;
 		}
 
-		public synchronized void load() {
-			final XStream2 xstream = new XStream2();
-			xstream.addCompatibilityAlias("org.jvnet.hudson.plugins.SSHSite", CredentialsSSHSite.LegacySSHSite.class);
+		@Override
+		protected XmlFile getConfigFile() {
+			final XStream2 customXstream = new XStream2();
+			customXstream.addCompatibilityAlias("org.jvnet.hudson.plugins.SSHSite", CredentialsSSHSite.LegacySSHSite.class);
 
-			final XmlFile file = new XmlFile(xstream, new File(Jenkins.getInstance().getRootDir(), getId() + ".xml"));
-			if (!file.exists()) {
-				return;
-			}
+			return new XmlFile(customXstream, new File(Jenkins.getInstance().getRootDir(),getId()+".xml"));
+		}
 
-			try {
-				file.unmarshal(this);
-			} catch (IOException e) {
-				LOGGER.log(Level.WARNING, "Failed to load " + file, e);
-			}
-
+		/**
+		 * Migration logic from plaintext login and pass sites to sites using credentials<br>
+		 * Called by XStream each time just after unmarshaling fields from XML<br>
+		 * Jenkins by default will persist migrated sites on shutdown or after global config save.
+		 */
+		private Object readResolve() {
 			boolean madeChanges = false;
 			final List<CredentialsSSHSite> migratedCredentials = new ArrayList<CredentialsSSHSite>(sites.size());
 			for (CredentialsSSHSite site : sites) {
@@ -276,8 +275,9 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 			if (madeChanges) {
 				sites.replaceBy(migratedCredentials);
-				save();
 			}
+
+			return this;
 		}
 	}
 
