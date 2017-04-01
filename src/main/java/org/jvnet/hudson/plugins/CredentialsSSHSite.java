@@ -3,6 +3,7 @@ package org.jvnet.hudson.plugins;
 import hudson.model.Item;
 import hudson.security.ACL;
 import hudson.util.StreamTaskListener;
+import jenkins.model.Jenkins;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,9 +32,12 @@ import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.domains.HostnamePortRequirement;
+import com.cloudbees.plugins.credentials.domains.HostnamePortSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -41,8 +45,8 @@ import com.jcraft.jsch.Session;
 public class CredentialsSSHSite {
 
 	public static class LegacySSHSite extends CredentialsSSHSite {
-		String password;
-		String keyfile;
+		transient String password;
+		transient String keyfile;
 	}
 
 	String hostname;
@@ -127,6 +131,10 @@ public class CredentialsSSHSite {
 		return session;
 	}
 
+	/**
+	 * Migrates LegacySSHSite (plaintext login and pass) to CredentialsSSHSite (credentials in credentials plugin)<br>
+	 * Returns the same instance when supplied with CredentialsSSHSite
+	 */
 	public static CredentialsSSHSite migrateToCredentials(CredentialsSSHSite site) throws InterruptedException,
 			IOException {
 		if (!(site instanceof LegacySSHSite)) {
@@ -136,7 +144,7 @@ public class CredentialsSSHSite {
 		final LegacySSHSite legacy = (LegacySSHSite) site;
 
 		final List<StandardUsernameCredentials> credentialsForDomain = CredentialsProvider.lookupCredentials(
-				StandardUsernameCredentials.class, (Item) null, ACL.SYSTEM, new HostnamePortRequirement(site.hostname,
+				StandardUsernameCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, new HostnamePortRequirement(site.hostname,
 						site.port));
 		final StandardUsernameCredentials existingCredentials = CredentialsMatchers.firstOrNull(credentialsForDomain,
 				CredentialsMatchers.withUsername(legacy.username));
@@ -161,8 +169,17 @@ public class CredentialsSSHSite {
 			final SystemCredentialsProvider credentialsProvider = SystemCredentialsProvider.getInstance();
 			final Map<Domain, List<Credentials>> credentialsMap = credentialsProvider.getDomainCredentialsMap();
 
-			final Domain domain = Domain.global();
-			credentialsMap.put(domain, Collections.<Credentials> singletonList(credentialsToCreate));
+			DomainSpecification hostnameSpec = new HostnamePortSpecification(site.hostname + ":" + site.port, null);
+			final Domain sshDomain = new Domain("ssh-plugin-" + site.hostname, "migrated ssh-plugin credentials-"
+					+ site.hostname, Lists.newArrayList(hostnameSpec));
+
+			List<Credentials> domainCreds = credentialsMap.get(sshDomain);
+			if (domainCreds == null) {
+				domainCreds = Lists.newArrayList();
+				credentialsMap.put(sshDomain, domainCreds);
+			}
+
+			domainCreds.add(credentialsToCreate);
 
 			credentialsProvider.setDomainCredentialsMap(credentialsMap);
 			credentialsProvider.save();
