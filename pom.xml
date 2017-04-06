@@ -6,7 +6,7 @@ Based on the cool scp plugin.</description>
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.477</version>
+		<version>1.609.3</version>
 	</parent>
 
 	<artifactId>ssh</artifactId>
@@ -20,13 +20,17 @@ Based on the cool scp plugin.</description>
 			<id>edmund_wagner</id>
 			<name>Edmund Wagner</name>
 		</developer>
+		<developer>
+			<id>ljader</id>
+			<name>Lukasz Jader</name>
+		</developer>
 	</developers>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.jcraft</groupId>
+			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>jsch</artifactId>
-			<version>0.1.53</version>
+			<version>0.1.54.1</version>
 		</dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -43,14 +47,26 @@ Based on the cool scp plugin.</description>
 					<goals>deploy</goals>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.jenkins-ci.tools</groupId>
+				<artifactId>maven-hpi-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<compatibleSinceVersion>2.5</compatibleSinceVersion>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
 	<distributionManagement>
 		<repository>
 			<id>maven.jenkins-ci.org</id>
-			<url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+			<url>https://repo.jenkins-ci.org/releases/</url>
 		</repository>
+		<snapshotRepository>
+			<id>maven.jenkins-ci.org</id>
+			<url>https://repo.jenkins-ci.org/snapshots/</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<!-- get every artifact through maven.glassfish.org, which proxies all the 

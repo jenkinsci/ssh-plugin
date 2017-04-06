@@ -31,6 +31,7 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.jsch.JSchConnector;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -38,7 +39,6 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHAuthenticator;
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserListBoxModel;
-import com.cloudbees.jenkins.plugins.sshcredentials.impl.JSchConnector;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.jcraft.jsch.JSchException;
@@ -190,7 +190,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) {
-			sites.replaceBy(req.bindParametersToList(CredentialsSSHSite.class, "ssh."));
+			sites.replaceBy(req.bindJSONToList(CredentialsSSHSite.class, formData.get("sites")));
 
 			save();
 			return true;
@@ -204,29 +204,24 @@ public final class SSHBuildWrapper extends BuildWrapper {
 					SSHAuthenticator.matcher(JSchConnector.class), credentials);
 		}
 
-		public FormValidation doKeyfileCheck(@QueryParameter String keyfile) {
-			keyfile = Util.fixEmpty(keyfile);
-			if (keyfile != null) {
-				File f = new File(keyfile);
-				if (!f.isFile()) {
-					return FormValidation.error("keyfile does not exist");
-				}
-			}
-
-			return FormValidation.ok();
-		}
-
-		public FormValidation doLoginCheck(StaplerRequest request) {
-			final String hostname = Util.fixEmpty(request.getParameter("hostname"));
-			final String port = Util.fixEmpty(request.getParameter("port"));
-			final String credentialId = Util.fixEmpty(request.getParameter("port"));
+		/**
+		 * Validates ssh connection - currently this is executed on master node
+		 */
+		public FormValidation doLoginCheck(@QueryParameter("hostname") String hostname,
+				@QueryParameter("port") String port,
+				@QueryParameter("credentialId") String credentialId,
+				@QueryParameter("serverAliveInterval") String serverAliveInterval,
+				@QueryParameter("timeout") String timeout) {
+			hostname = Util.fixEmpty(hostname);
+			port = Util.fixEmpty(port);
+			credentialId = Util.fixEmpty(credentialId);
 
 			if (hostname == null || port == null || credentialId == null) {// all fields not entered yet
-				return FormValidation.ok();
+				return FormValidation.warning("Please fill host, port and credentials.");
 			}
 
 			final CredentialsSSHSite site = new CredentialsSSHSite(hostname, port, credentialId,
-					request.getParameter("serverAliveInterval"), request.getParameter("timeout"));
+					serverAliveInterval, timeout);
 			try {
 				try {
 					site.testConnection(System.out);
@@ -241,7 +236,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 				LOGGER.log(Level.SEVERE, e.getMessage());
 				return FormValidation.error(e.getMessage());
 			}
-			return FormValidation.ok();
+			return FormValidation.ok("Successfull connection");
 		}
 
 		@Override
@@ -249,21 +244,20 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			return true;
 		}
 
-		public synchronized void load() {
-			final XStream2 xstream = new XStream2();
-			xstream.addCompatibilityAlias("org.jvnet.hudson.plugins.SSHSite", CredentialsSSHSite.LegacySSHSite.class);
+		@Override
+		protected XmlFile getConfigFile() {
+			final XStream2 customXstream = new XStream2();
+			customXstream.addCompatibilityAlias("org.jvnet.hudson.plugins.SSHSite", CredentialsSSHSite.LegacySSHSite.class);
 
-			final XmlFile file = new XmlFile(xstream, new File(Jenkins.getInstance().getRootDir(), getId() + ".xml"));
-			if (!file.exists()) {
-				return;
-			}
+			return new XmlFile(customXstream, new File(Jenkins.getInstance().getRootDir(),getId()+".xml"));
+		}
 
-			try {
-				file.unmarshal(this);
-			} catch (IOException e) {
-				LOGGER.log(Level.WARNING, "Failed to load " + file, e);
-			}
-
+		/**
+		 * Migration logic from plaintext login and pass sites to sites using credentials<br>
+		 * Called by XStream each time just after unmarshaling fields from XML<br>
+		 * Jenkins by default will persist migrated sites on shutdown or after global config save.
+		 */
+		private Object readResolve() {
 			boolean madeChanges = false;
 			final List<CredentialsSSHSite> migratedCredentials = new ArrayList<CredentialsSSHSite>(sites.size());
 			for (CredentialsSSHSite site : sites) {
@@ -281,8 +275,9 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 			if (madeChanges) {
 				sites.replaceBy(migratedCredentials);
-				save();
 			}
+
+			return this;
 		}
 	}
 
