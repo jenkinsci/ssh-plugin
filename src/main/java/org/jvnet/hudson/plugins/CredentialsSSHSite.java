@@ -113,7 +113,7 @@ public class CredentialsSSHSite {
 			throw new InterruptedException(message);
 		}
 
-		final JSchConnector connector = new JSchConnector(user.getUsername(), hostname, port);
+		final JSchConnector connector = new JSchConnector(user.getUsername(), getResolvedHostname(), port);
 
 		final SSHAuthenticator<JSchConnector, StandardUsernameCredentials> authenticator = SSHAuthenticator
 				.newInstance(connector, user);
@@ -349,6 +349,10 @@ public class CredentialsSSHSite {
 		} catch (final NumberFormatException e) {
 			this.timeout = 0;
 		}
+	}
+
+	private String getResolvedHostname() {
+		return resolvedHostname == null ? hostname : resolvedHostname;
 	}
 
 	public void testConnection(final PrintStream logger) throws JSchException, IOException, InterruptedException {
