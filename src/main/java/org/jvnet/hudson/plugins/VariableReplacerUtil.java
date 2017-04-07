@@ -20,6 +20,7 @@ public class VariableReplacerUtil {
 		vars.remove("_"); //why _ as key for build tool?
 		StringBuilder sb = new StringBuilder();
 		for (String variable : vars.keySet()) {
+			//TODO handle case sensitivity for command and each variable
 			if (originalCommand.contains(variable) ) {
 				sb.append(variable).append("=\"").append(vars.get(variable)).append("\"\n");
 			}
@@ -38,6 +39,7 @@ public class VariableReplacerUtil {
 			for (String variable : vars.keySet()) {
 				if (variable.equals(sensitive)) {
 					String value = vars.get(variable);
+					//TODO handle case sensitivity for command and each value
 					if (command.contains(value)) {
 						if (command.contains("\"" + value + "\"")) {
 							command = command.replace(("\"" + value + "\"") , "**********");

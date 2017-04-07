@@ -124,6 +124,7 @@ public class CredentialsSSHSite {
 		session.setServerAliveInterval(serverAliveInterval);
 
 		final Properties config = new Properties();
+		//TODO put this as configuration option instead of ignoring by default
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
 		session.connect(timeout);
