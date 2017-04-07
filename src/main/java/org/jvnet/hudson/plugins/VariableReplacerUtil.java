@@ -4,9 +4,18 @@ import java.util.Map;
 import java.util.Set;
 
 public class VariableReplacerUtil {
-	public static String replace(String originalCommand, Map<String, String> vars) {
+	/**
+	 * Sets/exports shell env vars before original command, if the command contains variable name
+	 * @param originalCommand
+	 * @param vars
+	 * @return shell script preluded with env vars
+	 */
+	public static String preludeWithEnvVars(String originalCommand, Map<String, String> vars) {
 		if(originalCommand == null){
 			return null;
+		}
+		if (vars == null) {
+			return originalCommand;
 		}
 		vars.remove("_"); //why _ as key for build tool?
 		StringBuilder sb = new StringBuilder();

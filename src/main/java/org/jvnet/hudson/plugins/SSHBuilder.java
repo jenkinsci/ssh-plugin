@@ -71,7 +71,7 @@ public class SSHBuilder extends Builder {
 		Map<String, String> vars = new HashMap<String, String>(); 
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
-		String runtime_cmd = VariableReplacerUtil.replace(command, vars);
+		String runtime_cmd = VariableReplacerUtil.preludeWithEnvVars(command, vars);
 		String scrubbed_cmd = VariableReplacerUtil.scrub(runtime_cmd, vars, build.getSensitiveBuildVariables());
 
 		if (runtime_cmd != null && runtime_cmd.trim().length() > 0) {
