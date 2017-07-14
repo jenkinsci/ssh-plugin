@@ -6,6 +6,7 @@ import hudson.Util;
 import hudson.XmlFile;
 import hudson.model.BuildListener;
 import hudson.model.ItemGroup;
+import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.security.ACL;
@@ -85,6 +86,11 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			InterruptedException {
 		PrintStream logger = listener.getLogger();
 		CredentialsSSHSite site = getSite();
+		if (site == null) {
+			listener.getLogger().println("[SSH] No SSH site found - this is likely a configuration problem!");
+			build.setResult(Result.UNSTABLE);
+			return true;
+		}
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
@@ -100,6 +106,11 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			InterruptedException {
 		PrintStream logger = listener.getLogger();
 		CredentialsSSHSite site = getSite();
+		if (site == null) {
+			listener.getLogger().println("[SSH] No SSH site found - this is likely a configuration problem!");
+			build.setResult(Result.UNSTABLE);
+			return true;
+		}
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());

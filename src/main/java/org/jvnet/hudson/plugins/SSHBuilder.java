@@ -5,6 +5,7 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
+import hudson.model.Result;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
@@ -64,6 +65,11 @@ public class SSHBuilder extends Builder {
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 		CredentialsSSHSite site = getSite();
+		if (site == null) {
+			listener.getLogger().println("[SSH] No SSH site found - this is likely a configuration problem!");
+			build.setResult(Result.UNSTABLE);
+			return true;
+		}
 		
 		// Get the build variables and make sure we substitute the current SSH Server host name
 		site.setResolvedHostname(build.getEnvironment(listener).expand(site.getHostname()));
