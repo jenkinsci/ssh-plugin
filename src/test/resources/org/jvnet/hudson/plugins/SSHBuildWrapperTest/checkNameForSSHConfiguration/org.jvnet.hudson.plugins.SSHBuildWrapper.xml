@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<org.jvnet.hudson.plugins.SSHBuildWrapper_-DescriptorImpl plugin="ssh@2.6">
+  <sites>
+    <org.jvnet.hudson.plugins.CredentialsSSHSite>
+      <name>SSH worker1</name>
+      <hostname>worker1.example.com</hostname>
+      <port>22</port>
+      <username>root</username>
+      <credentialId>ca0fcca1-8d34-4f6d-91d3-61a58a1ebb8a</credentialId>
+      <timeout>0</timeout>
+      <pty>false</pty>
+    </org.jvnet.hudson.plugins.CredentialsSSHSite>
+    <org.jvnet.hudson.plugins.CredentialsSSHSite>
+      <name/>
+      <hostname>worker2.example.com</hostname>
+      <port>22</port>
+      <username>root</username>
+      <credentialId>ca0fcca1-8d34-4f6d-91d3-61a58a1ebb8a</credentialId>
+      <timeout>0</timeout>
+      <pty>false</pty>
+    </org.jvnet.hudson.plugins.CredentialsSSHSite>
+    <org.jvnet.hudson.plugins.CredentialsSSHSite>
+      <name>  </name>
+      <hostname>worker3.example.com</hostname>
+      <port>22</port>
+      <username>root</username>
+      <credentialId>ca0fcca1-8d34-4f6d-91d3-61a58a1ebb8a</credentialId>
+      <timeout>0</timeout>
+      <pty>false</pty>
+    </org.jvnet.hudson.plugins.CredentialsSSHSite>
+  </sites>
+</org.jvnet.hudson.plugins.SSHBuildWrapper_-DescriptorImpl>
+

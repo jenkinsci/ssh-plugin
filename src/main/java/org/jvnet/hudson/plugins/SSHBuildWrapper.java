@@ -218,11 +218,12 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		/**
 		 * Validates ssh connection - currently this is executed on master node
 		 */
-		public FormValidation doLoginCheck(@QueryParameter("hostname") String hostname,
+		public FormValidation doLoginCheck(@QueryParameter("name") String name, @QueryParameter("hostname") String hostname,
 				@QueryParameter("port") String port,
 				@QueryParameter("credentialId") String credentialId,
 				@QueryParameter("serverAliveInterval") String serverAliveInterval,
 				@QueryParameter("timeout") String timeout) {
+			name = Util.fixEmptyAndTrim(name);
 			hostname = Util.fixEmpty(hostname);
 			port = Util.fixEmpty(port);
 			credentialId = Util.fixEmpty(credentialId);
@@ -231,7 +232,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 				return FormValidation.warning("Please fill host, port and credentials.");
 			}
 
-			final CredentialsSSHSite site = new CredentialsSSHSite(hostname, port, credentialId,
+			final CredentialsSSHSite site = new CredentialsSSHSite(name, hostname, port, credentialId,
 					serverAliveInterval, timeout);
 			try {
 				try {
