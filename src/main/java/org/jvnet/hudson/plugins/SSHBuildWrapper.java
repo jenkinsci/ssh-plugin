@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.jsch.JSchConnector;
 import org.kohsuke.stapler.AncestorInPath;
@@ -199,9 +201,22 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			return sites.toArray(new CredentialsSSHSite[0]);
 		}
 
+		public FormValidation doCheckHostname(@QueryParameter("hostname") String hostname) {
+			if ((hostname == null) || (hostname.trim().isEmpty())) {
+				return FormValidation.error("Hostname not specified!");
+			}
+			return FormValidation.ok();
+		}
+
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) {
-			sites.replaceBy(req.bindJSONToList(CredentialsSSHSite.class, formData.get("sites")));
+			List<CredentialsSSHSite> sitesFromRequest = req.bindJSONToList(CredentialsSSHSite.class, formData.get("sites"));
+			for (CredentialsSSHSite sshSite : sitesFromRequest) {
+				if (StringUtils.isBlank(sshSite.getHostname()) || StringUtils.isBlank(sshSite.getCredentialId())) {
+					return false;
+				}
+			}
+			sites.replaceBy(sitesFromRequest);
 
 			save();
 			return true;
