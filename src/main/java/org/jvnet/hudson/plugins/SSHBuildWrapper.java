@@ -207,6 +207,13 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			return FormValidation.ok();
 		}
 
+		public FormValidation doCheckCredentialId(@QueryParameter("credentialId") String credentialId) {
+			if ((credentialId == null) || (credentialId.trim().isEmpty())) {
+				return FormValidation.error("Credential not selected!");
+			}
+			return FormValidation.ok();
+		}
+
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) {
 			List<CredentialsSSHSite> sitesFromRequest = req.bindJSONToList(CredentialsSSHSite.class, formData.get("sites"));
