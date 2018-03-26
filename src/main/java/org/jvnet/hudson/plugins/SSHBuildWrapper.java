@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -31,8 +32,6 @@ import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.jsch.JSchConnector;
 import org.kohsuke.stapler.AncestorInPath;
@@ -211,9 +210,10 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) {
 			List<CredentialsSSHSite> sitesFromRequest = req.bindJSONToList(CredentialsSSHSite.class, formData.get("sites"));
-			for (CredentialsSSHSite sshSite : sitesFromRequest) {
+			for (Iterator<?> iter = sitesFromRequest.iterator(); iter.hasNext();) {
+				CredentialsSSHSite sshSite = (CredentialsSSHSite) iter.next();
 				if (StringUtils.isBlank(sshSite.getHostname()) || StringUtils.isBlank(sshSite.getCredentialId())) {
-					return false;
+					iter.remove();
 				}
 			}
 			sites.replaceBy(sitesFromRequest);
