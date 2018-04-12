@@ -12,6 +12,7 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -24,6 +25,7 @@ public class SSHBuilder extends Builder {
 	private String siteName;
 	private String command;
 	private boolean execEachLine;
+	private boolean hideCommand;
 
 	@Deprecated
 	public SSHBuilder(String siteName, String command) {
@@ -62,6 +64,15 @@ public class SSHBuilder extends Builder {
 		this.execEachLine = execEachLine;
 	}
 
+	@DataBoundSetter
+	public void setHideCommand(boolean hideCommand) {
+		this.hideCommand = hideCommand;
+	}
+
+	public boolean isHideCommand() {
+		return hideCommand;
+	}
+
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 		CredentialsSSHSite site = getSite();
@@ -81,11 +92,13 @@ public class SSHBuilder extends Builder {
 		String scrubbed_cmd = VariableReplacerUtil.scrub(runtime_cmd, vars, build.getSensitiveBuildVariables());
 
 		if (runtime_cmd != null && runtime_cmd.trim().length() > 0) {
-			if (execEachLine) {
-				listener.getLogger().printf("[SSH] commands:%n%s%n", scrubbed_cmd);
-			}
-			else {
-				listener.getLogger().printf("[SSH] script:%n%s%n", scrubbed_cmd);
+			if (!hideCommand) {
+				if (execEachLine) {
+					listener.getLogger().printf("[SSH] commands:%n%s%n", scrubbed_cmd);
+				}
+				else {
+					listener.getLogger().printf("[SSH] script:%n%s%n", scrubbed_cmd);
+				}
 			}
 			listener.getLogger().printf("%n[SSH] executing...%n");
 			return site.executeCommand(listener.getLogger(), runtime_cmd, execEachLine) == 0;

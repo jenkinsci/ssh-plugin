@@ -12,4 +12,7 @@
 		<f:checkbox />
 	</f:entry>
 
+	<f:entry title="${%Hide command from console output}" field="hideCommand">
+		<f:checkbox />
+	</f:entry>
 </j:jelly>
