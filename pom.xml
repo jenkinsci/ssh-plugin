@@ -13,7 +13,7 @@ Based on the cool scp plugin.</description>
 	<name>Jenkins SSH plugin</name>
 	<version>2.7-SNAPSHOT</version>
 	<packaging>hpi</packaging>
-	<url>http://wiki.jenkins-ci.org/display/JENKINS/SSH+plugin</url>
+	<url>https://github.com/jenkinsci/ssh-plugin</url>
 
 	<developers>
 		<developer>
@@ -69,7 +69,7 @@ Based on the cool scp plugin.</description>
 		</snapshotRepository>
 	</distributionManagement>
 
-	<!-- get every artifact through maven.glassfish.org, which proxies all the 
+	<!-- get every artifact through maven.glassfish.org, which proxies all the
 		artifacts that we need -->
 	<repositories>
 		<repository>
