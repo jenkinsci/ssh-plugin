@@ -82,4 +82,16 @@ public class SSHBuildWrapperTest {
 			}
 		}
 	}
+
+	@LocalData
+	@Test
+	public void checkNameForSSHConfiguration() throws Exception {
+		SSHBuildWrapper.DescriptorImpl desc = new SSHBuildWrapper.DescriptorImpl();
+		assertEquals(3, desc.getSites().length);
+
+		CredentialsSSHSite[] site = desc.getSites();
+			assertEquals("SSH worker1 - root@worker1.example.com:22", site[0].getSitename());
+			assertEquals("root@worker2.example.com:22", site[1].getSitename());
+			assertEquals("root@worker3.example.com:22", site[2].getSitename());
+	}
 }

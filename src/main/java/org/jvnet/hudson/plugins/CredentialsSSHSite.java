@@ -41,6 +41,7 @@ import com.google.common.collect.Lists;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import hudson.Util;
 
 public class CredentialsSSHSite {
 
@@ -48,6 +49,8 @@ public class CredentialsSSHSite {
 		transient String password;
 		transient String keyfile;
 	}
+
+	String name;
 
 	String hostname;
 	String username;
@@ -67,13 +70,14 @@ public class CredentialsSSHSite {
 	}
 
 	@DataBoundConstructor
-	public CredentialsSSHSite(final String hostname, final String port, final String credentialId,
+	public CredentialsSSHSite(final String name, final String hostname, final String port, final String credentialId,
 			final String serverAliveInterval, final String timeout) {
 		final StandardUsernameCredentials credentials = lookupCredentialsById(credentialId);
 		if (credentials != null) {
 			this.username = credentials.getUsername();
 		}
 
+		this.name = Util.fixEmptyAndTrim(name);
 		this.hostname = hostname;
 		try {
 			this.port = Integer.parseInt(port);
@@ -192,7 +196,7 @@ public class CredentialsSSHSite {
 			credentialId = existingCredentials.getId();
 		}
 
-		return new CredentialsSSHSite(legacy.hostname, String.valueOf(legacy.port), credentialId,
+		return new CredentialsSSHSite(null, legacy.hostname, String.valueOf(legacy.port), credentialId,
 				String.valueOf(legacy.serverAliveInterval), String.valueOf(legacy.timeout));
 	}
 
@@ -299,7 +303,7 @@ public class CredentialsSSHSite {
 
 	/** Returns &quot;identifier&quot; for ssh site: <strong>username@hostname:port</strong> */
 	public String getSitename() {
-		return username + "@" + hostname + ":" + port;
+		return (Util.fixEmptyAndTrim(name) == null) ? username + "@" + hostname + ":" + port : name + " - " + username + "@" + hostname + ":" + port;
 	}
 
 	public String getTimeout() {
@@ -327,6 +331,14 @@ public class CredentialsSSHSite {
 		} catch (final NumberFormatException e) {
 			this.port = 22;
 		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = Util.fixEmptyAndTrim(name);
 	}
 
 	@DataBoundSetter
@@ -365,7 +377,7 @@ public class CredentialsSSHSite {
 
 	@Override
 	public String toString() {
-		return "SSHSite [username=" + username + ", hostname=" + hostname + ",port=" + port + ", credentialId="
+		return "SSHSite [name=" + name + ", username=" + username + ", hostname=" + hostname + ",port=" + port + ", credentialId="
 				+ credentialId + ", pty=" + pty + "]";
 	}
 
