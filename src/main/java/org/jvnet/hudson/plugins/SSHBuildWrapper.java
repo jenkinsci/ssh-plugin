@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -35,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.jsch.JSchConnector;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -51,6 +53,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
 	private String siteName;
 	private String preScript;
 	private String postScript;
+	private boolean hideCommand;
 
 	public SSHBuildWrapper() {
 	}
@@ -95,7 +98,11 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.preludeWithEnvVars(preScript, vars);
-		log(logger, "executing pre build script:\n" + VariableReplacerUtil.scrub(runtime_cmd, vars, build.getSensitiveBuildVariables()));
+		if (hideCommand) {
+			log(logger, "executing pre build script");
+		} else {
+			log(logger, "executing pre build script:\n" + VariableReplacerUtil.scrub(runtime_cmd, vars, build.getSensitiveBuildVariables()));
+		}
 		if (runtime_cmd != null && !runtime_cmd.trim().equals("")) {
 			return site.executeCommand(logger, runtime_cmd) == 0;
 		}
@@ -115,7 +122,11 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		vars.putAll(build.getEnvironment(listener));
 		vars.putAll(build.getBuildVariables());
 		String runtime_cmd = VariableReplacerUtil.preludeWithEnvVars(postScript, vars);
-		log(logger, "executing post build script:\n" + VariableReplacerUtil.scrub(runtime_cmd, vars, build.getSensitiveBuildVariables()));
+		if (hideCommand) {
+			log(logger, "executing post build script");
+		} else {
+			log(logger, "executing post build script:\n" + VariableReplacerUtil.scrub(runtime_cmd, vars, build.getSensitiveBuildVariables()));
+		}
 		if (runtime_cmd != null && !runtime_cmd.trim().equals("")) {
 			return site.executeCommand(logger, runtime_cmd) == 0;
 		}
@@ -136,6 +147,15 @@ public final class SSHBuildWrapper extends BuildWrapper {
 
 	public void setPostScript(String postScript) {
 		this.postScript = postScript;
+	}
+
+	public boolean isHideCommand() {
+		return hideCommand;
+	}
+
+	@DataBoundSetter
+	public void setHideCommand(boolean hideCommand) {
+		this.hideCommand = hideCommand;
 	}
 
 	public CredentialsSSHSite getSite() {
@@ -199,9 +219,30 @@ public final class SSHBuildWrapper extends BuildWrapper {
 			return sites.toArray(new CredentialsSSHSite[0]);
 		}
 
+		public FormValidation doCheckHostname(@QueryParameter("hostname") String hostname) {
+			if ((hostname == null) || (hostname.trim().isEmpty())) {
+				return FormValidation.error("Hostname not specified!");
+			}
+			return FormValidation.ok();
+		}
+
+		public FormValidation doCheckCredentialId(@QueryParameter("credentialId") String credentialId) {
+			if ((credentialId == null) || (credentialId.trim().isEmpty())) {
+				return FormValidation.error("Credential not selected!");
+			}
+			return FormValidation.ok();
+		}
+
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) {
-			sites.replaceBy(req.bindJSONToList(CredentialsSSHSite.class, formData.get("sites")));
+			List<CredentialsSSHSite> sitesFromRequest = req.bindJSONToList(CredentialsSSHSite.class, formData.get("sites"));
+			for (Iterator<?> iter = sitesFromRequest.iterator(); iter.hasNext();) {
+				CredentialsSSHSite sshSite = (CredentialsSSHSite) iter.next();
+				if (StringUtils.isBlank(sshSite.getHostname()) || StringUtils.isBlank(sshSite.getCredentialId())) {
+					iter.remove();
+				}
+			}
+			sites.replaceBy(sitesFromRequest);
 
 			save();
 			return true;

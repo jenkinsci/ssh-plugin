@@ -73,7 +73,9 @@ public class CredentialsSSHSite {
 	public CredentialsSSHSite(final String name, final String hostname, final String port, final String credentialId,
 			final String serverAliveInterval, final String timeout) {
 		final StandardUsernameCredentials credentials = lookupCredentialsById(credentialId);
-		this.username = credentials.getUsername();
+		if (credentials != null) {
+			this.username = credentials.getUsername();
+		}
 
 		this.name = Util.fixEmptyAndTrim(name);
 		this.hostname = hostname;
