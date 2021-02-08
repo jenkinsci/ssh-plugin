@@ -1,8 +1,7 @@
 # ssh-plugin
 
-This Plugin was derived from the very cool [SCP
-Plugin](https://plugins.jenkins.io/scp/).You can use
-the SSH Plugin to run shell commands on a remote machine via ssh.
+This Plugin was derived from the very cool [SCP Plugin](https://plugins.jenkins.io/scp/).
+You can use the SSH Plugin to run shell commands on a remote machine via ssh.
 
 You can use the SSH Plugin to run shell commands on a remote machine via ssh.
 
