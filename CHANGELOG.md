@@ -16,9 +16,7 @@
 -   Add ajax validation to essential ssh host fields
 
 INFO: the "Add Credentials" button for SSH Site **does not work** in recent
-Jenkins 2.x versions - this will be fixed in upcoming 3.0 version.  
-(major version since plugin will have to migrate it's configuration to
-new format)
+Jenkins 2.x versions.
 
 ##### Version 2.5 (July 8 2017)
 
