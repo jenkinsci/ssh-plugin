@@ -2,14 +2,14 @@
 
 ##### Version 2.6.1 (April 13 2018)
 
--   [JENKINS-19973](https://issues.jenkins-ci.org/browse/JENKINS-19973) Option to hide ssh command in log
+-   [JENKINS-19973](https://issues.jenkins.io/browse/JENKINS-19973) Option to hide ssh command in log
 
 ##### Version 2.6 (April 7 2018)
 
--   [JENKINS-46172](https://issues.jenkins-ci.org/browse/JENKINS-46172) Handle NPE when not all fields are specified &
+-   [JENKINS-46172](https://issues.jenkins.io/browse/JENKINS-46172) Handle NPE when not all fields are specified &
     save only properly configured sites
 
--   [JENKINS-10128](https://issues.jenkins-ci.org/browse/JENKINS-10128) Set build to UNSTABLE when no SSH site is
+-   [JENKINS-10128](https://issues.jenkins.io/browse/JENKINS-10128) Set build to UNSTABLE when no SSH site is
     configured instead of NPE
 -   Add Jenkinsfile to plugin
 -   bump ssh-credentials dependency to 1.12
@@ -22,22 +22,22 @@ new format)
 
 ##### Version 2.5 (July 8 2017)
 
--   [JENKINS-21436](https://issues.jenkins-ci.org/browse/JENKINS-21436) Integrate with the SSH Credentials Plugin;
+-   [JENKINS-21436](https://issues.jenkins.io/browse/JENKINS-21436) Integrate with the SSH Credentials Plugin;
     previous credentials are migrated
 
--   [JENKINS-23231](https://issues.jenkins-ci.org/browse/JENKINS-23231) Add timeout parameter
+-   [JENKINS-23231](https://issues.jenkins.io/browse/JENKINS-23231) Add timeout parameter
 
--   [JENKINS-24913](https://issues.jenkins-ci.org/browse/JENKINS-24913) Don't show sensitive build variables in console
+-   [JENKINS-24913](https://issues.jenkins.io/browse/JENKINS-24913) Don't show sensitive build variables in console
     log
 
--   [JENKINS-12191](https://issues.jenkins-ci.org/browse/JENKINS-12191) Restore resolving hostname from environment
+-   [JENKINS-12191](https://issues.jenkins.io/browse/JENKINS-12191) Restore resolving hostname from environment
     variables
 
--   [JENKINS-12191](https://issues.jenkins-ci.org/browse/JENKINS-12191) Support build variables (substitution variables)
+-   [JENKINS-12191](https://issues.jenkins.io/browse/JENKINS-12191) Support build variables (substitution variables)
     during command execution (env variables are exported before the
     script)
 
--   [JENKINS-24402](https://issues.jenkins-ci.org/browse/JENKINS-24402) Updated to latest version of JSch (0.1.54) to
+-   [JENKINS-24402](https://issues.jenkins.io/browse/JENKINS-24402) Updated to latest version of JSch (0.1.54) to
     support modern algorithms
 
 -   Pull JSch dependency via Jenkins hosted jsch-plugin to use
@@ -65,13 +65,13 @@ before upgrading to version 2.5.**
 ##### Version 2.3 (Sep 24 2012)
 
 -   fixed
-    [JENKINS-15265](https://issues.jenkins-ci.org/browse/JENKINS-15265)
+    [JENKINS-15265](https://issues.jenkins.io/browse/JENKINS-15265)
 
 ##### Version 2.2 (Sep 03 2012)
 
--   fixed [JENKINS-15005](https://issues.jenkins-ci.org/browse/JENKINS-15005)
+-   fixed [JENKINS-15005](https://issues.jenkins.io/browse/JENKINS-15005)
     and
-    [JENKINS-14420](https://issues.jenkins-ci.org/browse/JENKINS-14420)
+    [JENKINS-14420](https://issues.jenkins.io/browse/JENKINS-14420)
 
 ##### Version 2.1 (Aug 14 2012)
 
@@ -89,7 +89,7 @@ before upgrading to version 2.5.**
 
 -   Run script on build step.
 -   Fixed
-    [JENKINS-9240](https://issues.jenkins-ci.org/browse/JENKINS-9240)
+    [JENKINS-9240](https://issues.jenkins.io/browse/JENKINS-9240)
 
 ##### Version 1.2 (Feb 17, 2011)
 
