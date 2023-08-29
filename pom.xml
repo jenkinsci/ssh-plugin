@@ -12,8 +12,6 @@
         <relativePath />
     </parent>
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
         <jenkins.version>2.320</jenkins.version>
     </properties>
     <artifactId>ssh</artifactId>
@@ -53,7 +51,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <release>11</release>
+                    <release>8</release>
                 </configuration>
             </plugin>
             <plugin>
