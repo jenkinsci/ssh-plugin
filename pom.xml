@@ -29,10 +29,6 @@
             <id>ljader</id>
             <name>Lukasz Jader</name>
         </developer>
-        <developer>
-            <id>monksy</id>
-            <name>Steven H</name>
-        </developer>
     </developers>
 
     <dependencies>
