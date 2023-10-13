@@ -8,11 +8,11 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.71</version>
+        <version>4.74</version>
         <relativePath />
     </parent>
     <properties>
-        <jenkins.version>2.320</jenkins.version>
+        <jenkins.version>2.361.4</jenkins.version>
     </properties>
     <artifactId>ssh</artifactId>
     <name>Jenkins SSH plugin</name>
@@ -35,14 +35,24 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.55.61.va_e9ee26616e7</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>ssh-credentials</artifactId>
-            <version>277.v95c2fec1c047</version>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.jenkins.tools.bom</groupId>
+                <artifactId>bom-2.361.x</artifactId>
+                <version>2102.v854b_fec19c92</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
@@ -55,7 +65,6 @@
             <plugin>
                 <groupId>org.jenkins-ci.tools</groupId>
                 <artifactId>maven-hpi-plugin</artifactId>
-                <version>3.36</version>
                 <extensions>true</extensions>
                 <configuration>
                     <compatibleSinceVersion>2.5</compatibleSinceVersion>
@@ -75,8 +84,6 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <!-- get every artifact through maven.glassfish.org, which proxies all the
-        artifacts that we need -->
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>
@@ -92,7 +99,7 @@
     </pluginRepositories>
 
     <scm>
-        <connection>scm:git:git@github.com:jenkinsci/ssh-plugin.git</connection>
+        <connection>scm:git:https://github.com/jenkinsci/ssh-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/ssh-plugin.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
