@@ -45,6 +45,7 @@ import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserListBoxModel;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.jcraft.jsch.JSchException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public final class SSHBuildWrapper extends BuildWrapper {
 
@@ -211,6 +212,8 @@ public final class SSHBuildWrapper extends BuildWrapper {
 		}
 
 		@Override
+                @SuppressFBWarnings(value = "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE",
+                                    justification = "Javadoc promises req is always non-null")
 		public BuildWrapper newInstance(StaplerRequest req, JSONObject formData) {
 			return req.bindJSON(clazz, formData);
 		}

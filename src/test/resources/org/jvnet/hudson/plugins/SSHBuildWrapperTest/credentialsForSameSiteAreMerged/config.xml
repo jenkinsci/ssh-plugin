@@ -1,13 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <hudson>
-  <version>1.609.3</version>
+  <version>2.320</version>
   <numExecutors>1</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
-  <authorizationStrategy class="hudson.security.ProjectMatrixAuthorizationStrategy">
-    <permission>hudson.model.Hudson.Read:anonymous</permission>
-    <permission>hudson.model.Item.Read:anonymous</permission>
-  </authorizationStrategy>
+  <authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>
   <securityRealm class="hudson.security.LegacySecurityRealm"/>
   <jdks/>
   <slaves/>
