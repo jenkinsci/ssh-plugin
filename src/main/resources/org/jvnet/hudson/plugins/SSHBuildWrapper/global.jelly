@@ -6,6 +6,9 @@
       description="${%SSH sites that projects will want to connect}">
       <f:repeatable var="site" name="sites" items="${descriptor.sites}">
         <table width="100%">
+          <f:entry title="${%Name}" help="/plugin/ssh/help-name.html">
+            <f:textbox name="name" value="${site.name}"/>
+          </f:entry>
           <f:entry title="${%Hostname}" help="/plugin/ssh/help-hostname.html">
             <f:textbox name="hostname" value="${site.hostname}" checkUrl="'${rootURL}/descriptorByName/org.jvnet.hudson.plugins.SSHBuildWrapper/checkHostname?hostname='+escape(this.value)" />
           </f:entry>
