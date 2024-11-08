@@ -38,7 +38,7 @@ public class VariableReplacerUtil {
 		for (String sensitive : eyesOnlyVars) {
 			for (Map.Entry<String, String> entry : vars.entrySet()) {
 				if (entry.getKey().equals(sensitive)) {
-					String value = vars.get(entry.getKey());
+					String value = entry.getValue();
 					//TODO handle case sensitivity for command and each value
 					if (command.contains(value)) {
 						if (command.contains("\"" + value + "\"")) {
