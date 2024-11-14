@@ -6,7 +6,7 @@
       description="${%SSH sites that projects will want to connect}">
       <f:repeatable var="site" name="sites" items="${descriptor.sites}">
         <table width="100%">
-          <f:entry title="${%Hostname}" field="hostname" help="/plugin/ssh/help-hostname.html">
+          <f:entry title="${%Hostname}" field="hostname"  help="/plugin/ssh/help-hostname.html">
             <f:textbox value="${site.hostname}"/>
           </f:entry>
           <f:entry title="${%Port}" help="/plugin/ssh/help-port.html">
