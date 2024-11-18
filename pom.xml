@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>ssh</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>${changelist}</version>
   <packaging>hpi</packaging>
   <name>Jenkins SSH plugin</name>
   <description>Execute shell scripts on remote host using ssh (pre and post build). Based on the cool scp plugin.</description>
@@ -45,8 +45,7 @@
   </distributionManagement>
 
   <properties>
-    <revision>2.10</revision>
-    <changelist>-SNAPSHOT</changelist>
+    <changelist>999999-SNAPSHOT</changelist>
     <jenkins.baseline>2.426</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
