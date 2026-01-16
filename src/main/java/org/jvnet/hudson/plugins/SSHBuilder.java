@@ -17,7 +17,7 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 public class SSHBuilder extends Builder {
 
@@ -129,7 +129,7 @@ public class SSHBuilder extends Builder {
         }
 
         @Override
-        public Builder newInstance(StaplerRequest req, JSONObject formData)
+        public Builder newInstance(StaplerRequest2 req, JSONObject formData)
                 throws hudson.model.Descriptor.FormException {
             return req.bindJSON(clazz, formData);
         }
