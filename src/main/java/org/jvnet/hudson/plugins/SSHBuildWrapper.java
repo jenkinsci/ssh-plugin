@@ -35,7 +35,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.jsch.JSchConnector;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -245,7 +244,11 @@ public final class SSHBuildWrapper extends BuildWrapper {
                     req.bindJSONToList(CredentialsSSHSite.class, formData.get("sites"));
             for (Iterator<?> iter = sitesFromRequest.iterator(); iter.hasNext(); ) {
                 CredentialsSSHSite sshSite = (CredentialsSSHSite) iter.next();
-                if (StringUtils.isBlank(sshSite.getHostname()) || StringUtils.isBlank(sshSite.getCredentialId())) {
+                if (sshSite == null
+                        || sshSite.getHostname() == null
+                        || sshSite.getHostname().isBlank()
+                        || sshSite.getCredentialId() == null
+                        || sshSite.getCredentialId().isBlank()) {
                     iter.remove();
                 }
             }
@@ -350,6 +353,6 @@ public final class SSHBuildWrapper extends BuildWrapper {
     }
 
     private void log(final PrintStream logger, final String message) {
-        logger.println(StringUtils.defaultString(DESCRIPTOR.getShortName()) + message);
+        logger.println(Objects.toString(DESCRIPTOR.getShortName(), "") + message);
     }
 }
