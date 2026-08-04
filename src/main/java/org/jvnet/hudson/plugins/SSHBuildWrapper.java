@@ -13,6 +13,7 @@ import hudson.XmlFile;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
+import hudson.model.Descriptor.FormException;
 import hudson.model.ItemGroup;
 import hudson.model.Result;
 import hudson.security.ACL;
@@ -31,17 +32,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.jsch.JSchConnector;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 public final class SSHBuildWrapper extends BuildWrapper {
 
@@ -217,7 +218,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
         @SuppressFBWarnings(
                 value = "NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE",
                 justification = "Javadoc promises req is always non-null")
-        public BuildWrapper newInstance(StaplerRequest req, JSONObject formData) {
+        public BuildWrapper newInstance(StaplerRequest2 req, JSONObject formData) {
             return req.bindJSON(clazz, formData);
         }
 
@@ -240,12 +241,12 @@ public final class SSHBuildWrapper extends BuildWrapper {
         }
 
         @Override
-        public boolean configure(StaplerRequest req, JSONObject formData) {
+        public boolean configure(StaplerRequest2 req, JSONObject formData) {
             List<CredentialsSSHSite> sitesFromRequest =
                     req.bindJSONToList(CredentialsSSHSite.class, formData.get("sites"));
             for (Iterator<?> iter = sitesFromRequest.iterator(); iter.hasNext(); ) {
                 CredentialsSSHSite sshSite = (CredentialsSSHSite) iter.next();
-                if (StringUtils.isBlank(sshSite.getHostname()) || StringUtils.isBlank(sshSite.getCredentialId())) {
+                if (isBlank(sshSite.getHostname()) || isBlank(sshSite.getCredentialId())) {
                     iter.remove();
                 }
             }
@@ -328,9 +329,7 @@ public final class SSHBuildWrapper extends BuildWrapper {
                     migratedCredentials.add(migrated);
 
                     madeChanges = madeChanges || (migrated != site);
-                } catch (InterruptedException e) {
-                    throw new IllegalStateException("Failed to migrate site: " + site, e);
-                } catch (IOException e) {
+                } catch (InterruptedException | IOException | FormException e) {
                     throw new IllegalStateException("Failed to migrate site: " + site, e);
                 }
             }
@@ -351,7 +350,11 @@ public final class SSHBuildWrapper extends BuildWrapper {
         this.siteName = siteName;
     }
 
+    private static boolean isBlank(final String value) {
+        return value == null || value.isBlank();
+    }
+
     private void log(final PrintStream logger, final String message) {
-        logger.println(StringUtils.defaultString(DESCRIPTOR.getShortName()) + message);
+        logger.println(Objects.toString(DESCRIPTOR.getShortName(), "") + message);
     }
 }
