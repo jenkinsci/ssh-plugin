@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import hudson.model.Descriptor.FormException;
 import hudson.model.Item;
 import hudson.security.ACL;
 import hudson.util.StreamTaskListener;
@@ -139,7 +140,7 @@ public class CredentialsSSHSite {
      * Returns the same instance when supplied with CredentialsSSHSite
      */
     public static CredentialsSSHSite migrateToCredentials(CredentialsSSHSite site)
-            throws InterruptedException, IOException {
+            throws InterruptedException, IOException, FormException {
         if (!(site instanceof LegacySSHSite)) {
             return site;
         }
