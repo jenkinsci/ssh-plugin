@@ -43,6 +43,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 public final class SSHBuildWrapper extends BuildWrapper {
 
@@ -257,6 +258,8 @@ public final class SSHBuildWrapper extends BuildWrapper {
         }
 
         public ListBoxModel doFillCredentialIdItems(final @AncestorInPath ItemGroup<?> context) {
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+
             final List<StandardUsernameCredentials> credentials = CredentialsProvider.lookupCredentials(
                     StandardUsernameCredentials.class, context, ACL.SYSTEM, CredentialsSSHSite.NO_REQUIREMENTS);
 
@@ -268,12 +271,15 @@ public final class SSHBuildWrapper extends BuildWrapper {
         /**
          * Validates ssh connection - currently this is executed on master node
          */
+        @RequirePOST
         public FormValidation doLoginCheck(
                 @QueryParameter("hostname") String hostname,
                 @QueryParameter("port") String port,
                 @QueryParameter("credentialId") String credentialId,
                 @QueryParameter("serverAliveInterval") String serverAliveInterval,
                 @QueryParameter("timeout") String timeout) {
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+
             hostname = Util.fixEmpty(hostname);
             port = Util.fixEmpty(port);
             credentialId = Util.fixEmpty(credentialId);
